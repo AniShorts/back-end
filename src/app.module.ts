@@ -11,6 +11,7 @@ import { WalkcommentsModule } from './walkcomments/walkcomments.module';
 import { VideosModule } from './videos/videos.module';
 import { VideocommentsModule } from './videocomments/videocomments.module';
 import { ChattingsModule } from './chattings/chattings.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -24,6 +25,16 @@ import { ChattingsModule } from './chattings/chattings.module';
     VideosModule,
     VideocommentsModule,
     ChattingsModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'test',
+      database: 'Anishorts',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true, //서비스가 실행되고 데이터베이스가 연결될 때 항상 데이터베이스가 초기화 되므로 절대 프로덕션에는 true로 하지 마세요!
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
