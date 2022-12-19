@@ -13,6 +13,7 @@ import { VideocommentsModule } from './videocomments/videocomments.module';
 import { ChattingsModule } from './chattings/chattings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { Users } from './users/dto/users.dto';
 const ENV=process.env;
 
 @Module({
@@ -27,8 +28,8 @@ const ENV=process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: ENV.DATABASE_SYNCHRONIZE as unknown as boolean,
+      entities: [Users,],
+      synchronize: true,
     }),
     UsersModule,
     FollowsModule,
