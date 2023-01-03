@@ -71,3 +71,45 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## env
+NODE_ENV를 사용하기 때문에   npm install -g win-node-env 으로 초기 설정이 필요하다
+
+또한, .env 폴더에서 두가지 환경변수를 동적으로 사용있다.
+```
+.env/.development.env
+.env/.production.env
+```
+### .production.env
+> 배포용 환경변수
+>
+>DATABASE_HOST: 데이터 베이스 주소
+>
+>DATABASE_PORT: 데이터 베이스 포트
+>
+>DATABASE_USERNAME: 데이터 베이스 유저 이름
+>
+>DATABASE_PASSWORD: 데이터 베이스 비밀번호
+>
+>DATABASE_DATABASE: 데이터 베이스 db
+>
+>SYNCHROIZE: 데이터 베이스 동기화 설정
+>
+>SERVER_PORT: 서버 포트
+---
+### .development.env
+> 개발용 환경변수
+>
+>DATABASE_HOST: 데이터 베이스 주소
+>
+>DATABASE_PORT: 데이터 베이스 포트
+>
+>DATABASE_USERNAME: 데이터 베이스 유저 이름
+>
+>DATABASE_PASSWORD: 데이터 베이스 비밀번호
+>
+>DATABASE_DATABASE: 데이터 베이스 db
+>
+>SYNCHROIZE: 데이터 베이스 동기화 설정
+>
+>SERVER_PORT: 서버 포트

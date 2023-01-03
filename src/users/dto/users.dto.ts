@@ -47,4 +47,5 @@ export class Users {
         comment: 'profile_img',
       })
     profileImg:string;
+
 }
