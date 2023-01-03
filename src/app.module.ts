@@ -13,12 +13,15 @@ import { VideocommentsModule } from './videocomments/videocomments.module';
 import { ChattingsModule } from './chattings/chattings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-const ENV=process.env;
+const ENV = process.env;
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: (ENV.NODE_ENV === 'production') ? '.production.env' : './.env/.development.env'
+      envFilePath:
+        ENV.NODE_ENV === 'production'
+          ? '.production.env'
+          : './.env/.development.env',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
