@@ -13,12 +13,14 @@ import { VideocommentsModule } from './videocomments/videocomments.module';
 import { ChattingsModule } from './chattings/chattings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { Users } from './users/dto/users.dto';
+import { AuthModule } from './auth/auth.module';
 const ENV=process.env;
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: (ENV.NODE_ENV === 'production') ? '.production.env' : './.env/.development.env'
+      envFilePath: (ENV.NODE_ENV === 'production') ? './.env/.production.env' : './.env/.development.env'
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -27,8 +29,8 @@ const ENV=process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: ENV.DATABASE_SYNCHRONIZE as unknown as boolean,
+      entities: [Users,],
+      synchronize: true,
     }),
     UsersModule,
     FollowsModule,
@@ -40,6 +42,7 @@ const ENV=process.env;
     VideosModule,
     VideocommentsModule,
     ChattingsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
