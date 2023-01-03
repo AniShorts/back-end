@@ -5,8 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './dto/users.dto';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users])],
+  imports: [
+    TypeOrmModule.forFeature([Users])
+  ],
   controllers: [UsersController],
+  exports: [UsersService],
   providers: [UsersService]
 })
 export class UsersModule {}
