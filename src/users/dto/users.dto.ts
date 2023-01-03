@@ -7,6 +7,7 @@ import {
     UpdateDateColumn,
     OneToMany,
  } from 'typeorm/index';
+ import { Exclude } from 'class-transformer';
 
 @Entity({
     orderBy:{
@@ -46,4 +47,5 @@ export class Users {
         comment: 'profile_img',
       })
     profileImg:string;
+
 }

@@ -1,11 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Request,Response} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Users } from './dto/users.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService
+    ) {}
 
   @Post("signup")
   async create(
@@ -24,6 +28,17 @@ export class UsersController {
       profileImg:profileImg
     }
     return await this.usersService.create(user);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Request() req) {
+    const user = req.user;
+    // await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
+    // res.cookie('Authentication', accessToken, accessOption);
+    // res.cookie('Refresh', refreshToken, refreshOption);
+
+    return user;
   }
 
   @Get('/test/:userId')
