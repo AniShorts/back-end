@@ -13,19 +13,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService
     ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme(configService.get('TOKEN_LOCATION')),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_ACCESS_TOKEN_SECRET'),
     });
   }
 
   async validate(payload: any): Promise<any>  {
-    const {nickname,password}=payload
-    const user = await this.authService.validateUser(nickname, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    const token=await this.authService.createAccessToken({userId:user.userId});
-    return token
+    console.log(payload)
+    return {userId:payload.userId};
   }
 }

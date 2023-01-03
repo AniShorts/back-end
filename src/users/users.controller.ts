@@ -41,6 +41,13 @@ export class UsersController {
     return user;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('test')
+  async idCheck(@Request() req){
+    return req.user
+
+  }
+
   @Get('/test/:userId')
   findOne(@Param('userId') userId: number) {
     return this.usersService.findOne(userId);

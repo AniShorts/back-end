@@ -22,7 +22,7 @@ const ENV=process.env;
         secret: config.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: { expiresIn:`${config.get(
           'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}m` },
+        )}`+'d' },
       }),
     }),
   ],
