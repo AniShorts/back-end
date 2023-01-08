@@ -5,10 +5,12 @@ import {
   Timestamp,
   CreateDateColumn,
   ManyToOne,
+  Entity,
 } from 'typeorm';
 
 //import { User } from '../../users/entities';
 
+@Entity()
 export class Video extends BaseEntity {
   @PrimaryGeneratedColumn()
   videoId: number;
