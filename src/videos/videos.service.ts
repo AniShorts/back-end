@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
@@ -13,29 +13,41 @@ export class VideosService {
 
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
     const userId = 1;
-    console.log('service', createVideoDto);
 
     const newVideo = this.videosRepository.create({
       userId,
       ...createVideoDto,
     });
-    console.log('newVideo', newVideo);
     return await this.videosRepository.save(newVideo);
   }
 
-  findAll() {
-    return `This action returns all videos`;
+  async findAllVideos() {
+    return await this.videosRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} video`;
+  async findOneVideo(id: number): Promise<Video> {
+    const video = await this.videosRepository.findOne({
+      where: {
+        videoId: id,
+      },
+    });
+
+    if (!video) {
+      throw new NotFoundException(`Can't find Video with id: ${id}`);
+    }
+    return video;
   }
 
-  update(id: number, updateVideoDto: UpdateVideoDto) {
-    return `This action updates a #${id} video`;
+  async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
+    const updatedVideo = await this.videosRepository.update(
+      { videoId: id },
+      { ...updateVideoDto },
+    );
+    return updatedVideo;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} video`;
+  async deleteVideo(id: number) {
+    const result = await this.videosRepository.delete(id);
+    return result;
   }
 }
