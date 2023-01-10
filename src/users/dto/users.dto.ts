@@ -8,6 +8,7 @@ import {
     OneToMany,
  } from 'typeorm/index';
  import { Exclude } from 'class-transformer';
+ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({
     orderBy:{
@@ -15,33 +16,39 @@ import {
       }
 })
 export class Users {
+    @ApiProperty()
     @PrimaryGeneratedColumn('increment')
     userId:number;
 
+    @ApiProperty()
     @PrimaryColumn({
         type: 'varchar',
         comment: 'nickname',
     })
     nickname:string;
 
+    @ApiProperty()
     @Column({
         type: 'varchar',
         comment: 'user_password',
       })
     password:string;
     
+    @ApiProperty()
     @Column({
         type: 'varchar',
         comment: 'phonenumber',
       })
     phone:string;
-
+    
+    @ApiProperty()
     @Column({
         type: 'json',
         comment: 'like_animal_kind',
       })
-    category:string[];
-
+    category:object[];
+    
+    @ApiProperty()
     @Column({
         type: 'varchar',
         comment: 'profile_img',

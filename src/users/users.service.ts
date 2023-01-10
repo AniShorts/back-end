@@ -24,7 +24,7 @@ export class UsersService {
       const hashedPassword = await hash(users.password, 10);
       users.password=hashedPassword
       let user=await this.userRepository.save({...users})
-      return {success:true,user};
+      return {success:true,result:true};
     }
   }
 
@@ -40,7 +40,7 @@ export class UsersService {
     return result!==null;
   }
 
-  async findOne(userId:number): Promise<Users> {
+  async findOneByUserId(userId:number): Promise<Users> {
     return await this.userRepository.findOne({
       where: {
         userId:userId,
@@ -52,6 +52,12 @@ export class UsersService {
       where: {
         nickname:nickname,
       }
+    })
+  }
+
+  async inputCategory(userId:number,category:object[]){
+    return await this.userRepository.update({userId},{  
+      category:category
     })
   }
 
