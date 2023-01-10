@@ -5,8 +5,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse } from '@nestjs/swagger';
-import { request } from 'http';
-import { Req } from '@nestjs/common/decorators';
+
 
 @Controller('users')
 export class UsersController {
@@ -43,8 +42,8 @@ export class UsersController {
     return {status:400,result:false}
   }
 
-  //아이디 찾기 
-  //가드를 사용하여 전화번호 인증 구현
+  //아이디 찾기(미구현)
+  //가드를 사용하여 전화번호 인증 구현(적용 예정)
   @Post('findPW')
   async findID(@Request() req){
     const {nickname}=req.body
@@ -55,8 +54,8 @@ export class UsersController {
     return {status:400,result:false}
   }
 
-  //비밀번호 찾기+
-  //가드를 사용하여 전화번호 인증 구현
+  //비밀번호 찾기(미구현)
+  //가드를 사용하여 전화번호 인증 구현(적용 예정)
   @Post('findPW')
   async findPW(@Request() req){
     const {nickname}=req.body
