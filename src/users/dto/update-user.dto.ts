@@ -6,6 +6,6 @@ export class UpdateUserDto extends PartialType(Users) {
     nickname:string;
     password:string;
     phone:string;
-    category:string[];
+    category:object[];
     profileImg:string;
 }
