@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,HttpException ,HttpStatus } from '@nestjs/common';
 import { Users } from './dto/users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,7 +19,7 @@ export class UsersService {
     delete users.userId;
     let nickname_check=await this.findByNickNameOne(users.nickname)
     if(nickname_check){
-      return {success:false,error:"Exist NickName"};
+      throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
       const hashedPassword = await hash(users.password, 10);
       users.password=hashedPassword
@@ -60,20 +60,7 @@ export class UsersService {
       category:category
     })
   }
-
-  // async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
-  //   const user = await this.getById(id);
-
-  //   const isRefreshTokenMatching = await compare(
-  //     refreshToken,
-  //     user.currentHashedRefreshToken,
-  //   );
-
-  //   if (isRefreshTokenMatching) {
-  //     return user;
-  //   }
-  // }
-
+  
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
