@@ -93,7 +93,14 @@ class CategoryType{
     })
     category:category[];
 }
-
+class PasswordType{
+    @ApiProperty({
+        example: '12345',
+        description: '변경하는 비밀번호',
+        required: true,
+    })
+    password:string
+}
 export{
     SignupOutputType,
     outputBase,
@@ -103,4 +110,5 @@ export{
     LoginInputType,
     LoginOutputType,
     CategoryType,
+    PasswordType,
 }

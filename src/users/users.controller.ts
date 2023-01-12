@@ -5,8 +5,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
-import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType} from './AnyType'
+import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './AnyType'
 import { HttpStatus } from '@nestjs/common/enums';
+import { resourceLimits } from 'worker_threads';
 
 
 @Controller('users')
@@ -113,6 +114,7 @@ export class UsersController {
   }
 
   //카테고리 출력
+  @ApiBearerAuth('token')
   @ApiOperation({ summary: '유저 카테고리 출력 API', description: '유저 카테고리 출력한다.' })
   @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
   @UseGuards(JwtAuthGuard)
@@ -122,16 +124,28 @@ export class UsersController {
     const {category}=await this.usersService.findOneByUserId(userId);
     return {category};
   }
-
-
-
-  @Patch(':userId')
-  update(@Param('userId') userId: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+userId, updateUserDto);
+  
+  //비밀번호 변경
+  @ApiBearerAuth('token')
+  @ApiBody({type:PasswordType})
+  @ApiOperation({ summary: '유저 비밀번호 변경 API', description: '유저 비밀번호 변경한다.' })
+  @ApiResponse({status:200, description: '비밀번호 변경.', type: outputBase })
+  @UseGuards(JwtAuthGuard)
+  @Patch('')
+  async updatePassword(@Request() req) {
+    const {userId}=req.user
+    const {password}=req.body
+    return await this.usersService.update(userId,password)
   }
 
-  @Delete(':userId')
-  remove(@Param('userId') userId: number) {
-    return this.usersService.remove(+userId);
+  //회원탈퇴
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: '유저 삭제 API', description: '유저 정보를 삭제한다.' })
+  @ApiResponse({status:200, description: '회원탈퇴', type: outputBase })
+  @UseGuards(JwtAuthGuard)
+  @Delete('')
+  remove(@Request() req) {
+    const {userId}=req.user;
+    return this.usersService.remove(userId);
   }
 }

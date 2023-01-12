@@ -2,7 +2,7 @@ import { Injectable,HttpException ,HttpStatus } from '@nestjs/common';
 import { Users } from './dto/users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm/index';
+import { QueryFailedError, Repository, TreeRepositoryUtils } from 'typeorm/index';
 import { compare, hash } from 'bcrypt';
 
 @Injectable()
@@ -30,13 +30,10 @@ export class UsersService {
 
   /*
   변수 nickname을 받아 중복을 확인하는 코드
+  중복 삭제(예정)
    */
   async findByNickNameOne(nickname:string):Promise<boolean>{
-    let result=await this.userRepository.findOne({
-      where: {
-        nickname:nickname,
-      }
-    })
+    let result=await this.findOneByNickname(nickname)
     return result!==null;
   }
 
@@ -60,12 +57,15 @@ export class UsersService {
       category:category
     })
   }
-  
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+
+  async update(userId: number,password:string) {
+    const hashedPassword = await hash(password, 10);
+    return await this.userRepository.update({userId},{  
+      password:hashedPassword
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(userId:number) {
+    return await this.userRepository.delete({userId})
   }
 }
