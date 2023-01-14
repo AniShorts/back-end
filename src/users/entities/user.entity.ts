@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from 'typeorm/index';
 import { ApiProperty } from '@nestjs/swagger';
+import {Video} from '../../videos/entities/video.entity'
 
 @Entity({
   orderBy:{
@@ -15,6 +16,8 @@ import { ApiProperty } from '@nestjs/swagger';
     }
 })
 export class Users {
+  
+  // @OneToMany(() => Video, (video:Video) => video.userId)
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
   userId:number;

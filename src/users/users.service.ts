@@ -16,15 +16,15 @@ export class UsersService {
   userId를 제외하여 DB users에 insert하는 구문
   1. nickname의 중복을 확인하여 insert의 결정한다.
    */
-  async create(users: Users):Promise<Object> {
-    delete users.userId;
-    let nickname_check=await this.findByNickNameOne(users.nickname)
+  async create(createUserDto: CreateUserDto):Promise<Object> {
+    delete createUserDto.userId;
+    let nickname_check=await this.findByNickNameOne(createUserDto.nickname)
     if(nickname_check){
       throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
-      const hashedPassword = await hash(users.password, 10);
-      users.password=hashedPassword
-      let user=await this.userRepository.save({...users})
+      const hashedPassword = await hash(createUserDto.password, 10);
+      createUserDto.password=hashedPassword
+      let user=await this.userRepository.save({...createUserDto})
       return {success:true,result:true};
     }
   }

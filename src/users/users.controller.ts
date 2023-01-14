@@ -22,17 +22,8 @@ export class UsersController {
   @ApiOperation({ summary: '유저 생성 API', description: '유저를 생성한다.' })
   @ApiResponse({status:200, description: '유저를 생성한다.', type: SignupOutputType })
   @Post("signup")
-  async create(@Request() req) {
-    const {nickname,password,phone,category,profileImg}=req.body
-    const user:Users={
-      userId:null,
-      nickname:nickname,
-      password:password,
-      phone:phone,
-      category:category,
-      profileImg:profileImg
-    }
-      return await this.usersService.create(user);
+  async create(@Body() createUserDto: CreateUserDto) {
+      return await this.usersService.create(createUserDto);
   }
   
   //nickname 중복확인
@@ -103,7 +94,7 @@ export class UsersController {
   //카테고리 입력
   //응답 수정 필요
   @ApiBody({type:CategoryType})
-  @ApiBearerAuth('token')
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: '유저 카테고리 입력 API', description: '유저 카테고리 입력한다.' })
   @ApiResponse({status:200, description: '수정 필요', type: SignupOutputType })
   @UseGuards(JwtAuthGuard)
@@ -115,19 +106,20 @@ export class UsersController {
   }
 
   //카테고리 출력
-  @ApiBearerAuth('token')
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: '유저 카테고리 출력 API', description: '유저 카테고리 출력한다.' })
   @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
   @UseGuards(JwtAuthGuard)
   @Get('sendCategoury')
   async sendCategory(@Request() req){
     const {userId}=req.user
+    console.log(userId)
     const {category}=await this.usersService.findOneByUserId(userId);
     return {category};
   }
   
   //비밀번호 변경
-  @ApiBearerAuth('token')
+  @ApiBearerAuth('access-token')
   @ApiBody({type:PasswordType})
   @ApiOperation({ summary: '유저 비밀번호 변경 API', description: '유저 비밀번호 변경한다.' })
   @ApiResponse({status:200, description: '비밀번호 변경.', type: outputBase })
@@ -140,7 +132,7 @@ export class UsersController {
   }
 
   //회원탈퇴
-  @ApiBearerAuth('token')
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: '유저 삭제 API', description: '유저 정보를 삭제한다.' })
   @ApiResponse({status:200, description: '회원탈퇴', type: outputBase })
   @UseGuards(JwtAuthGuard)
