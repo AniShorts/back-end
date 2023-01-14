@@ -13,7 +13,7 @@ import { VideocommentsModule } from './videocomments/videocomments.module';
 import { ChattingsModule } from './chattings/chattings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { Users } from './users/dto/users.dto';
+import { Users } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 const ENV=process.env;
 

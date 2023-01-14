@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Request,Response,HttpException,} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Users } from './dto/users.dto';
+import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';

@@ -1,5 +1,6 @@
 import { Injectable,HttpException ,HttpStatus } from '@nestjs/common';
-import { Users } from './dto/users.dto';
+import { Users } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository, TreeRepositoryUtils } from 'typeorm/index';
