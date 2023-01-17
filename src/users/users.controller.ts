@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Request,Response} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,HttpException,} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Users } from './dto/users.dto';
+import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse } from '@nestjs/swagger';
-import { request } from 'http';
-import { Req } from '@nestjs/common/decorators';
+import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './AnyType'
+import { HttpStatus } from '@nestjs/common/enums';
+import { resourceLimits } from 'worker_threads';
+import { Request, Response } from 'express';
+
 
 @Controller('users')
 export class UsersController {
@@ -15,93 +19,136 @@ export class UsersController {
     ) {}
 
   //회원가입
-  @Post("signup")
+  @ApiBody({type:SignupInputType})
   @ApiOperation({ summary: '유저 생성 API', description: '유저를 생성한다.' })
-  @ApiResponse({status:200, description: '유저를 생성한다.', type: Users })
-  async create(@Request() req) {
-    const {nickname,password,phone,category,profileImg}=req.body
-    const user:Users={
-      userId:null,
-      nickname:nickname,
-      password:password,
-      phone:phone,
-      category:category,
-      profileImg:profileImg
-    }
-    return await this.usersService.create(user);
+  @ApiResponse({status:200, description: '유저를 생성한다.', type: SignupOutputType })
+  @Post("signup")
+  async create(@Body() createUserDto: CreateUserDto) {
+      return await this.usersService.create(createUserDto);
   }
   
   //nickname 중복확인
+  @ApiBody({type:NicknameInputType})
+  @ApiOperation({ summary: '유저 닉네임 중첩확인 API', description: '유저의 닉네임의 중복을 확인한다..' })
+  @ApiResponse({status:200, description: '중복이 아니다..', type: outputBase })
+  @ApiResponse({status:200.1, description: '중복이다.', type: outputBaseFalse })
   @Post('checkNickname')
-  async checkNickname(@Request() req){
+  async checkNickname(@Req() req){
     const {nickname}=req.body
     let result=await this.usersService.findByNickNameOne(nickname);
     //true: 중복되지않음, false: 중복됨
     if(result){
-      return {status:200,result:result}
+      return {result:result}
+    }else{
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
-    return {status:400,result:false}
   }
 
-  //아이디 찾기 
-  //가드를 사용하여 전화번호 인증 구현
+  //swagger 수정필요    
+  //아이디 찾기(미구현)
+  //가드를 사용하여 전화번호 인증 구현(적용 예정)
+  @ApiBody({type:NicknameInputType})
+  @ApiOperation({ summary: '아이디 찾기 API', description: '아이디 찾는다.' })
+  @ApiResponse({status:200, description: '아이디 제공.', type: outputBase })
+  @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
   @Post('findPW')
-  async findID(@Request() req){
+  async findID(@Req() req){
+    const {nickname}=req.body
+    let result =await this.usersService.findByNickNameOne(nickname);
+    if(result){
+      return {result:result}
+    }else{
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+  }
+
+  //swagger 수정필요
+  //비밀번호 찾기(미구현)
+  //가드를 사용하여 전화번호 인증 구현(적용 예정)
+  @ApiBody({type:NicknameInputType})
+  @ApiOperation({ summary: '비밀번호 찾기 API', description: '비밀번호 찾는다.' })
+  @ApiResponse({status:200, description: '비밀번호 제공.', type: outputBase })
+  @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
+  @Post('findPW')
+  async findPW(@Req() req){
     const {nickname}=req.body
     let result =await this.usersService.findByNickNameOne(nickname);
     if(result){
       return {status:200,result:result}
+    }else{
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
-    return {status:400,result:false}
-  }
-
-  //비밀번호 찾기+
-  //가드를 사용하여 전화번호 인증 구현
-  @Post('findPW')
-  async findPW(@Request() req){
-    const {nickname}=req.body
-    let result =await this.usersService.findByNickNameOne(nickname);
-    if(result){
-      return {status:200,result:result}
-    }
-    return {status:400,result:false}
   }
 
   //로그인
+  @ApiBody({type:LoginInputType})
+  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
+  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
+  @ApiResponse({status:200.1, description: '로그인 실패.' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Req() req) {
     const user = req.user;
     return user;
   }
   
   //카테고리 입력
+  //응답 수정 필요
+  @ApiBody({type:CategoryType})
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: '유저 카테고리 입력 API', description: '유저 카테고리 입력한다.' })
+  @ApiResponse({status:200, description: '수정 필요', type: SignupOutputType })
   @UseGuards(JwtAuthGuard)
   @Post('inputCategoury')
-  async inputCategory(@Request() req){
+  async inputCategory(@Req() req){
     const {userId}=req.user;
     const {category}=req.body;
     return await this.usersService.inputCategory(userId,category)
   }
 
   //카테고리 출력
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: '유저 카테고리 출력 API', description: '유저 카테고리 출력한다.' })
+  @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
   @UseGuards(JwtAuthGuard)
   @Get('sendCategoury')
-  async sendCategory(@Request() req){
+  async sendCategory(@Req() req){
     const {userId}=req.user
+    console.log(userId)
     const {category}=await this.usersService.findOneByUserId(userId);
     return {category};
   }
-
-
-
-  @Patch(':userId')
-  update(@Param('userId') userId: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+userId, updateUserDto);
+  
+  //비밀번호 변경
+  @ApiBearerAuth('access-token')
+  @ApiBody({type:PasswordType})
+  @ApiOperation({ summary: '유저 비밀번호 변경 API', description: '유저 비밀번호 변경한다.' })
+  @ApiResponse({status:200, description: '비밀번호 변경.', type: outputBase })
+  @UseGuards(JwtAuthGuard)
+  @Patch('')
+  async updatePassword(@Req() req) {
+    const {userId}=req.user
+    const {password}=req.body
+    return await this.usersService.update(userId,password)
   }
 
-  @Delete(':userId')
-  remove(@Param('userId') userId: number) {
-    return this.usersService.remove(+userId);
+  //회원탈퇴
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: '유저 삭제 API', description: '유저 정보를 삭제한다.' })
+  @ApiResponse({status:200, description: '회원탈퇴', type: outputBase })
+  @UseGuards(JwtAuthGuard)
+  @Delete('')
+  remove(@Req() req) {
+    const {userId}=req.user;
+    return this.usersService.remove(userId);
+  }
+
+  //token test
+  @UseGuards(JwtAuthGuard)
+  @Get('test')
+  test(@Req() req:Request, @Res() res:Response){
+    return res.status(200).send({
+      test:"test"
+    });
   }
 }

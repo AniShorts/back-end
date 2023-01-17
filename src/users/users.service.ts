@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Users } from './dto/users.dto';
+import { Injectable,HttpException ,HttpStatus } from '@nestjs/common';
+import { Users } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm/index';
+import { QueryFailedError, Repository, TreeRepositoryUtils } from 'typeorm/index';
 import { compare, hash } from 'bcrypt';
 
 @Injectable()
@@ -15,28 +16,25 @@ export class UsersService {
   userId를 제외하여 DB users에 insert하는 구문
   1. nickname의 중복을 확인하여 insert의 결정한다.
    */
-  async create(users: Users):Promise<Object> {
-    delete users.userId;
-    let nickname_check=await this.findByNickNameOne(users.nickname)
+  async create(createUserDto: CreateUserDto):Promise<Object> {
+    delete createUserDto.userId;
+    let nickname_check=await this.findByNickNameOne(createUserDto.nickname)
     if(nickname_check){
-      return {success:false,error:"Exist NickName"};
+      throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
-      const hashedPassword = await hash(users.password, 10);
-      users.password=hashedPassword
-      let user=await this.userRepository.save({...users})
+      const hashedPassword = await hash(createUserDto.password, 10);
+      createUserDto.password=hashedPassword
+      let user=await this.userRepository.save({...createUserDto})
       return {success:true,result:true};
     }
   }
 
   /*
   변수 nickname을 받아 중복을 확인하는 코드
+  중복 삭제(예정)
    */
   async findByNickNameOne(nickname:string):Promise<boolean>{
-    let result=await this.userRepository.findOne({
-      where: {
-        nickname:nickname,
-      }
-    })
+    let result=await this.findOneByNickname(nickname)
     return result!==null;
   }
 
@@ -61,24 +59,19 @@ export class UsersService {
     })
   }
 
-  // async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
-  //   const user = await this.getById(id);
-
-  //   const isRefreshTokenMatching = await compare(
-  //     refreshToken,
-  //     user.currentHashedRefreshToken,
-  //   );
-
-  //   if (isRefreshTokenMatching) {
-  //     return user;
-  //   }
-  // }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(userId: number,password:string) {
+    const hashedPassword = await hash(password, 10);
+    return await this.userRepository.update({userId},{  
+      password:hashedPassword
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(userId:number) {
+    return await this.userRepository.delete({userId})
+  }
+
+  async getUserRefreshTokenMatches(refresh:string, userId:number){
+    const userInfo:Users=await this.findOneByUserId(userId);
+    return;
   }
 }
