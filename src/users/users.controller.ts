@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Request,Response,HttpException,} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,HttpException,} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -9,6 +9,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBea
 import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './AnyType'
 import { HttpStatus } from '@nestjs/common/enums';
 import { resourceLimits } from 'worker_threads';
+import { Request, Response } from 'express';
 
 
 @Controller('users')
@@ -32,7 +33,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '중복이 아니다..', type: outputBase })
   @ApiResponse({status:200.1, description: '중복이다.', type: outputBaseFalse })
   @Post('checkNickname')
-  async checkNickname(@Request() req){
+  async checkNickname(@Req() req){
     const {nickname}=req.body
     let result=await this.usersService.findByNickNameOne(nickname);
     //true: 중복되지않음, false: 중복됨
@@ -51,7 +52,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '아이디 제공.', type: outputBase })
   @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
   @Post('findPW')
-  async findID(@Request() req){
+  async findID(@Req() req){
     const {nickname}=req.body
     let result =await this.usersService.findByNickNameOne(nickname);
     if(result){
@@ -69,7 +70,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '비밀번호 제공.', type: outputBase })
   @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
   @Post('findPW')
-  async findPW(@Request() req){
+  async findPW(@Req() req){
     const {nickname}=req.body
     let result =await this.usersService.findByNickNameOne(nickname);
     if(result){
@@ -86,7 +87,7 @@ export class UsersController {
   @ApiResponse({status:200.1, description: '로그인 실패.' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Req() req) {
     const user = req.user;
     return user;
   }
@@ -99,7 +100,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '수정 필요', type: SignupOutputType })
   @UseGuards(JwtAuthGuard)
   @Post('inputCategoury')
-  async inputCategory(@Request() req){
+  async inputCategory(@Req() req){
     const {userId}=req.user;
     const {category}=req.body;
     return await this.usersService.inputCategory(userId,category)
@@ -111,7 +112,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
   @UseGuards(JwtAuthGuard)
   @Get('sendCategoury')
-  async sendCategory(@Request() req){
+  async sendCategory(@Req() req){
     const {userId}=req.user
     console.log(userId)
     const {category}=await this.usersService.findOneByUserId(userId);
@@ -125,7 +126,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '비밀번호 변경.', type: outputBase })
   @UseGuards(JwtAuthGuard)
   @Patch('')
-  async updatePassword(@Request() req) {
+  async updatePassword(@Req() req) {
     const {userId}=req.user
     const {password}=req.body
     return await this.usersService.update(userId,password)
@@ -137,8 +138,17 @@ export class UsersController {
   @ApiResponse({status:200, description: '회원탈퇴', type: outputBase })
   @UseGuards(JwtAuthGuard)
   @Delete('')
-  remove(@Request() req) {
+  remove(@Req() req) {
     const {userId}=req.user;
     return this.usersService.remove(userId);
+  }
+
+  //token test
+  @UseGuards(JwtAuthGuard)
+  @Get('test')
+  test(@Req() req:Request, @Res() res:Response){
+    return res.status(200).send({
+      test:"test"
+    });
   }
 }

@@ -69,4 +69,9 @@ export class UsersService {
   async remove(userId:number) {
     return await this.userRepository.delete({userId})
   }
+
+  async getUserRefreshTokenMatches(refresh:string, userId:number){
+    const userInfo:Users=await this.findOneByUserId(userId);
+    return;
+  }
 }
