@@ -96,6 +96,16 @@ NODE_ENV를 사용하기 때문에   npm install -g win-node-env 으로 초기 �
 >SYNCHROIZE: 데이터 베이스 동기화 설정
 >
 >SERVER_PORT: 서버 포트
+>
+>JWT_ACCESS_TOKEN_SECRET: access토큰비밀키
+>
+>JWT_ACCESS_TOKEN_EXPIRATION_TIME: 유지 시간(일수)
+>
+>JWT_REFRESH_TOKEN_SECRET: refresh토큰비밀키
+>
+>JWT_REFRESH_TOKEN_EXPIRATION_TIME: 유지시간
+>
+>TOKEN_LOCATION: 토큰 위치
 ---
 ### .development.env
 > 개발용 환경변수
@@ -113,3 +123,13 @@ NODE_ENV를 사용하기 때문에   npm install -g win-node-env 으로 초기 �
 >SYNCHROIZE: 데이터 베이스 동기화 설정
 >
 >SERVER_PORT: 서버 포트
+>
+>JWT_ACCESS_TOKEN_SECRET: access토큰비밀키
+>
+>JWT_ACCESS_TOKEN_EXPIRATION_TIME: 유지 시간(일수)
+>
+>JWT_REFRESH_TOKEN_SECRET: refresh토큰비밀키
+>
+>JWT_REFRESH_TOKEN_EXPIRATION_TIME: 유지시간
+>
+>TOKEN_LOCATION: 토큰 위치
