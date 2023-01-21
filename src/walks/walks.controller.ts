@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
 import { WalksService } from './walks.service';
 import { CreateWalkDto } from './dto/create-walk.dto';
 import { UpdateWalkDto } from './dto/update-walk.dto';
+import { Request, Response } from 'express';
 
 @Controller('walks')
 export class WalksController {
   constructor(private readonly walksService: WalksService) {}
 
-  @Post()
-  create(@Body() createWalkDto: CreateWalkDto) {
-    return this.walksService.create(createWalkDto);
+  //산책 게시판 목록
+  @Get('/list')
+  async walkBoardList(@Req() request:Request,@Res() response:Response) {
+    const list=await this.walksService.boardfindAll();
+    return response.status(200).send({
+      list
+    })
   }
 
-  @Get()
-  findAll() {
-    return this.walksService.findAll();
-  }
-
+  //산책 게시글
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.walksService.findOne(+id);
+  async readWalkBoard(@Param('id') id:string) {
+    return await this.walksService.findOneByWalkId(Number(id));
   }
 
+  //산책 게시판 작성
+  @Post()
+  async writeWalkBoard(@Req() request:Request,@Res() response:Response) {
+    const createWalkDto:CreateWalkDto=request.body;
+    await this.walksService.create(createWalkDto);
+    return response.status(200).send({
+      result:true
+    })
+  }
+
+  //산책 게시판 수정
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalkDto: UpdateWalkDto) {
-    return this.walksService.update(+id, updateWalkDto);
+  async editWalkBoard(@Param('id') id: string,@Req() request:Request,@Res() response:Response) {
+    const updateWalkDto:UpdateWalkDto=request.body;
+    const walkId:number=Number(id);
+    await this.walksService.update(walkId,updateWalkDto);
+    return response.status(200).send({
+      result:true
+    })
   }
 
+  //산책 게시판 삭제
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.walksService.remove(+id);
+  async deleteWalkBoard(@Param('id') id: string,@Req() request:Request,@Res() response:Response) {
+    await this.walksService.remove(Number(id))
+    return response.status(200).send({
+      result:true
+    })
   }
 }

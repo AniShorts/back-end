@@ -51,7 +51,7 @@ export class UsersController {
   @ApiOperation({ summary: '아이디 찾기 API', description: '아이디 찾는다.' })
   @ApiResponse({status:200, description: '아이디 제공.', type: outputBase })
   @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
-  @Post('findPW')
+  @Post('findId')
   async findID(@Req() req){
     const {nickname}=req.body
     let result =await this.usersService.findByNickNameOne(nickname);
