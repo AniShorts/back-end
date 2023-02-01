@@ -93,7 +93,6 @@ export class UsersController {
   }
   
   //카테고리 입력
-  //응답 수정 필요
   @ApiBody({type:CategoryType})
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: '유저 카테고리 입력 API', description: '유저 카테고리 입력한다.' })
@@ -102,7 +101,7 @@ export class UsersController {
   @Post('inputCategoury')
   async inputCategory(@Req() req){
     const {userId}=req.user;
-    const {category}=req.body;
+    const category=req.body;
     return await this.usersService.inputCategory(userId,category)
   }
 

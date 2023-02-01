@@ -1,5 +1,4 @@
 export class CreateWalkDto {
-    walkId:number;
     walkTitle:string;
     walkContent:string;
     location:string;
