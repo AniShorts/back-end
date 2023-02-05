@@ -24,11 +24,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  // async validate(req, payload: any) {
-  //   const refreshToken = req.cookies?.Refresh;
-  //   return this.usersService.getUserIfRefreshTokenMatches(
-  //     refreshToken,
-  //     payload.id,
-  //   );
-  // }
+  async validate(req, payload: any) {
+    const refreshToken = req.cookies?.Refresh;
+    return this.usersService.getUserRefreshTokenMatches(
+      refreshToken,
+      payload.userId,
+    );
+  }
 }
