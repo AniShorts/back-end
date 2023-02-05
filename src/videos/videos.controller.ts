@@ -33,9 +33,14 @@ export class VideosController {
   }
 
   //검색-동영상 하나를 불러오는 GET 요청이 @param을 받기 때문에 순서때문에 애러 발생
-  @Get('search')
-  async searchVideos(@Query() searchVideoDto: SearchVideoDto) {
-    return await this.videosService.searchVideos(searchVideoDto);
+  @Get('searchByname')
+  async searchByName(@Query() searchVideoDto: SearchVideoDto) {
+    return await this.videosService.searchByName(searchVideoDto);
+  }
+
+  @Get('searchBycate')
+  async searchByCate(@Query() searchVideoDto: SearchVideoDto) {
+    return await this.videosService.searchByCate(searchVideoDto);
   }
 
   //동영상 하나

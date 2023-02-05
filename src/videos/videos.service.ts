@@ -53,12 +53,31 @@ export class VideosService {
     return result;
   }
 
-  //검색 - QueryBuilder를 사용해서 구현해야 할 듯
-  async searchVideos(keyword: SearchVideoDto) {
-    const searchedVideos = await this.videosRepository.find({
+  //검색 - videoName으로 검색
+  async searchByName(keyword: SearchVideoDto) {
+    const searchedVideosByName = await this.videosRepository.find({
       where: { videoName: Like(`%${keyword.keyword}%`) },
     });
+    console.log('searchedVideosByName', searchedVideosByName);
 
-    return searchedVideos;
+    return searchedVideosByName;
+  }
+
+  //검색 - category으로 검색
+  async searchByCate(keyword: SearchVideoDto) {
+    const searchedVideosByCategory = await this.videosRepository.find({
+      where: { category: Like(`%${keyword.keyword}%`) },
+    });
+    console.log('searchedVideosByCategory', searchedVideosByCategory);
+    /*   
+      //중복 제거
+      let set = new Set(searchedVideosByName.concat(searchedVideosByCategory));
+      const searchedVideos = [...set];
+      searchedVideos.filter((element, index) => {
+        return searchedVideos.indexOf(element) === index;
+      });
+      console.log('searchedVideos', searchedVideos); */
+
+    return searchedVideosByCategory;
   }
 }
