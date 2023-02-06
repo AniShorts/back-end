@@ -39,6 +39,20 @@ export class VideosService {
     }
     return video;
   }
+  //유저별
+  async findUsersVideos(id: number) {
+    const video = await this.videosRepository.find({
+      where: {
+        userId: id,
+      },
+    });
+
+    if (!video) {
+      throw new NotFoundException(`Can't find Video with id: ${id}`);
+    }
+    return video;
+  }
+
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
     const updatedVideo = await this.videosRepository.update(
