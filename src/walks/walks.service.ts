@@ -17,15 +17,48 @@ export class WalksService {
   //1. 생성 제한
   //4. 상세 유저마다 다르게
   
-  async create(createWalkDto: CreateWalkDto) {
+  //게시판 작성
+  async createWalkBoard(createWalkDto: CreateWalkDto) {
     createWalkDto.curNum=1;
+    createWalkDto.date=new Date();
     await this.walkRepository.save({...createWalkDto})
   }
 
+  //게시판 목록 (pagnation적용)
   async boardfindAll(pageNum:number,pageSize:number) {
+    if(pageNum<=0){
+      //에러 코드 수정
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    const boardCount=await this.walkRepository.count();
+    
+    const pageLimit:number=boardCount%pageSize===0?boardCount/pageSize:boardCount/pageSize+1
 
-    const pageLimit:number=await this.walkRepository.count()/pageSize;
-    const pageList:Object=[];
+    if(pageNum>pageLimit){
+      pageNum=pageLimit
+    }
+    
+    var pageList:Number[]=[];
+    var providePageNum=function(first:number){
+      for(let i=first;i<first+pageSize;i++){
+        pageList.push(i)
+      }
+    }
+    if(boardCount===0){
+      providePageNum(1);
+      return  {
+        list:null,
+        pageList:pageList
+      }
+    }
+    if(pageNum<=pageSize/2){
+      providePageNum(1);
+    }else if(pageNum>pageLimit-pageSize/2){
+      providePageNum(pageLimit-pageSize);
+    }else{
+      providePageNum(pageNum-pageSize/2);
+    }
+
     const list:Object=await this.walkRepository.findAndCount({
       order:{
         walkId:'DESC'
@@ -40,17 +73,23 @@ export class WalksService {
 
   }
 
+  
   async findOneByWalkId(targetWalkId: number) {
-    return await this.walkRepository.findOne({
+    const walkInfo=await this.walkRepository.findOne({
       where:{
         walkId:targetWalkId
       }
     })
+    if(walkInfo===null){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }else{
+      return walkInfo
+    }
   }
 
-  async update(walkId: number, updateWalkDto: UpdateWalkDto) {
+  async update(walkId: number,userId:number, updateWalkDto: UpdateWalkDto) {
     const walkInfo=await this.findOneByWalkId(walkId)
-    if(walkInfo.userId!==updateWalkDto.userId){
+    if(walkInfo.userId!==userId){
       //에러코드 수정 필요
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
