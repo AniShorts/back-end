@@ -49,6 +49,12 @@ export class VideosController {
     return await this.videosService.findOneVideo(+id);
   }
 
+  //유저별
+  @Get('user/:id')
+  async findUsersVideos(@Param('id') id: number) {
+    return await this.videosService.findUsersVideos(+id);
+  }
+
   //동영상 업데이트
   @Patch(':id')
   async updateVideo(
