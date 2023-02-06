@@ -14,6 +14,7 @@ import { ChattingsModule } from './chattings/chattings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Users } from './users/entities/user.entity';
+import { Video } from './videos/entities/video.entity';
 import { AuthModule } from './auth/auth.module';
 const ENV = process.env;
 
