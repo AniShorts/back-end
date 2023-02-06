@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
-import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './AnyType'
+import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './userAnyType'
 import { HttpStatus } from '@nestjs/common/enums';
 import { resourceLimits } from 'worker_threads';
 import { Request, Response } from 'express';
@@ -24,7 +24,7 @@ export class UsersController {
   @ApiResponse({status:200, description: '유저를 생성한다.', type: SignupOutputType })
   @Post("signup")
   async create(@Body() createUserDto: CreateUserDto) {
-      return await this.usersService.create(createUserDto);
+      return await this.usersService.createUser(createUserDto);
   }
   
   //nickname 중복확인
@@ -35,9 +35,9 @@ export class UsersController {
   @Post('checkNickname')
   async checkNickname(@Req() req){
     const {nickname}=req.body
-    let result=await this.usersService.findByNickNameOne(nickname);
+    let result=await this.usersService.findOneByNickname(nickname);
     //true: 중복되지않음, false: 중복됨
-    if(result){
+    if(result===null){
       return {result:result}
     }else{
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
@@ -54,8 +54,8 @@ export class UsersController {
   @Post('findId')
   async findID(@Req() req){
     const {nickname}=req.body
-    let result =await this.usersService.findByNickNameOne(nickname);
-    if(result){
+    let result =await this.usersService.findOneByNickname(nickname);
+    if(result===null){
       return {result:result}
     }else{
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
@@ -72,8 +72,8 @@ export class UsersController {
   @Post('findPW')
   async findPW(@Req() req){
     const {nickname}=req.body
-    let result =await this.usersService.findByNickNameOne(nickname);
-    if(result){
+    let result =await this.usersService.findOneByNickname(nickname);
+    if(result===null){
       return {status:200,result:result}
     }else{
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
@@ -128,7 +128,7 @@ export class UsersController {
   async updatePassword(@Req() req) {
     const {userId}=req.user
     const {password}=req.body
-    return await this.usersService.update(userId,password)
+    return await this.usersService.updatePassword(userId,password)
   }
 
   //회원탈퇴
@@ -139,7 +139,7 @@ export class UsersController {
   @Delete('')
   remove(@Req() req) {
     const {userId}=req.user;
-    return this.usersService.remove(userId);
+    return this.usersService.removeUserByUserId(userId);
   }
 
   //token test
