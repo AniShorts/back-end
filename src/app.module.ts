@@ -15,6 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
+import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
 const ENV = process.env;
 
@@ -33,7 +34,7 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users, Video],
+      entities: [Users,],
       synchronize: true,
     }),
     UsersModule,
