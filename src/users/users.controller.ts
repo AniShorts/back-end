@@ -35,12 +35,12 @@ export class UsersController {
   @Post('checkNickname')
   async checkNickname(@Req() req){
     const {nickname}=req.body
-    let result=await this.usersService.findOneByNickname(nickname);
+    let check=await this.usersService.findOneByNickname(nickname);
     //true: 중복되지않음, false: 중복됨
-    if(result===null){
-      return {result:result}
+    if(check===null){
+      return {result:true}
     }else{
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      return {result:false}
     }
   }
 
