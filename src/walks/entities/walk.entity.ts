@@ -6,8 +6,10 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
+    ManyToOne,
   } from 'typeorm/index';
 import { ApiProperty } from '@nestjs/swagger';
+import { Users } from 'src/users/entities/user.entity';
   
 @Entity({
 orderBy:{
@@ -49,7 +51,9 @@ export class Walk {
     @ApiProperty()
     date:Date;
     
+
     @ApiProperty()
+    @ManyToOne(() => Users, users => users.userId)
     @Column({
       type: 'int',
       comment: 'user`s unique number',
