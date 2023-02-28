@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
 import { AuthModule } from './auth/auth.module';
+import { Videolike } from './videolikes/entities/videolike.entity';
 const ENV = process.env;
 
 @Module({
@@ -33,7 +34,7 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users, Video],
+      entities: [Users, Video, Videolike],
       synchronize: true,
     }),
     UsersModule,
