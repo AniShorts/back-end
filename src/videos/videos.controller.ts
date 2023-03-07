@@ -25,7 +25,7 @@ export class VideosController {
   //동영상 업로드
   //@UseGuards(JwtAuthGuard)
   @Post()
-  async createVideo(@Body() createVideoDto: CreateVideoDto, @Req() req) {
+  async createVideo(@Body() createVideoDto: CreateVideoDto /* , @Req() req */) {
     /*     const { userId } = req.user;
     console.log(userId); */
     return await this.videosService.createVideo(createVideoDto);
