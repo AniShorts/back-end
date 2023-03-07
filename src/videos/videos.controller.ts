@@ -23,12 +23,15 @@ export class VideosController {
   constructor(private readonly videosService: VideosService) {}
 
   //동영상 업로드
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createVideo(@Body() createVideoDto: CreateVideoDto /* , @Req() req */) {
-    /*     const { userId } = req.user;
-    console.log(userId); */
-    return await this.videosService.createVideo(createVideoDto);
+  async createVideo(@Body() createVideoDto: CreateVideoDto, @Req() req) {
+    const { userId } = req.user;
+    const videoData = {
+      ...createVideoDto,
+      userId,
+    };
+    return await this.videosService.createVideo(videoData);
   }
 
   //전체 동영상
