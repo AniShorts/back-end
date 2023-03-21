@@ -16,6 +16,9 @@ import { ConfigModule } from '@nestjs/config';
 import { Users } from './users/entities/user.entity';
 import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
+import { CategoryController } from './category/category.controller';
+import { CategoryModule } from './category/category.module';
+import { Category } from './category/entities/category.entity';
 const ENV=process.env;
 
 @Module({
@@ -30,7 +33,7 @@ const ENV=process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users,Walk],
+      entities: [Users,Walk,Category],
       synchronize: true,
     }),
     UsersModule,
@@ -44,8 +47,9 @@ const ENV=process.env;
     VideocommentsModule,
     ChattingsModule,
     AuthModule,
+    CategoryModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, CategoryController],
   providers: [AppService],
 })
 export class AppModule {}
