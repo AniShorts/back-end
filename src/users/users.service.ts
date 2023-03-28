@@ -48,12 +48,12 @@ export class UsersService {
     })
   }
 
-  //카테고리 업데이트
-  async inputCategory(userId:number,category:object[]){
-    return await this.userRepository.update({userId},{  
-      category:category
-    })
-  }
+  // //카테고리 업데이트
+  // async inputCategory(userId:number,category:object[]){
+  //   return await this.userRepository.update({userId},{  
+  //     category:category
+  //   })
+  // }
 
   //비밀번호 업데이트
   async updatePassword(userId: number,password:string) {

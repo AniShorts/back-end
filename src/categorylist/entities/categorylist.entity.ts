@@ -15,16 +15,15 @@ import { ApiProperty } from '@nestjs/swagger';
         userId: 'DESC'
       }
   })
-export class Category {
+
+export class Categorylist {
     @ApiProperty()
     @PrimaryGeneratedColumn('increment')
-    userId:number;
+    id:number;
 
     @ApiProperty()
     @PrimaryColumn({
         type: 'int',
-        comment: 'category id',
+        comment: 'category name',
     })
-    categoryId:number;
-
-}
+    category:string;}

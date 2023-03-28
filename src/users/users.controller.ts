@@ -93,30 +93,30 @@ export class UsersController {
   }
   
   //카테고리 입력
-  @ApiBody({type:CategoryType})
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: '유저 카테고리 입력 API', description: '유저 카테고리 입력한다.' })
-  @ApiResponse({status:200, description: '수정 필요', type: SignupOutputType })
-  @UseGuards(JwtAuthGuard)
-  @Post('inputCategoury')
-  async inputCategory(@Req() req){
-    const {userId}=req.user;
-    const category=req.body;
-    return await this.usersService.inputCategory(userId,category)
-  }
+  // @ApiBody({type:CategoryType})
+  // @ApiBearerAuth('access-token')
+  // @ApiOperation({ summary: '유저 카테고리 입력 API', description: '유저 카테고리 입력한다.' })
+  // @ApiResponse({status:200, description: '수정 필요', type: SignupOutputType })
+  // @UseGuards(JwtAuthGuard)
+  // @Post('inputCategoury')
+  // async inputCategory(@Req() req){
+  //   const {userId}=req.user;
+  //   const category=req.body;
+  //   return await this.usersService.inputCategory(userId,category)
+  // }
 
   //카테고리 출력
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: '유저 카테고리 출력 API', description: '유저 카테고리 출력한다.' })
-  @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
-  @UseGuards(JwtAuthGuard)
-  @Get('sendCategoury')
-  async sendCategory(@Req() req){
-    const {userId}=req.user
-    console.log(userId)
-    const {category}=await this.usersService.findOneByUserId(userId);
-    return {category};
-  }
+  // @ApiBearerAuth('access-token')
+  // @ApiOperation({ summary: '유저 카테고리 출력 API', description: '유저 카테고리 출력한다.' })
+  // @ApiResponse({status:200, description: '유저 카테고리 제공한다.', type: CategoryType })
+  // @UseGuards(JwtAuthGuard)
+  // @Get('sendCategoury')
+  // async sendCategory(@Req() req){
+  //   const {userId}=req.user
+  //   console.log(userId)
+  //   const {category}=await this.usersService.findOneByUserId(userId);
+  //   return {category};
+  // }
   
   //비밀번호 변경
   @ApiBearerAuth('access-token')
