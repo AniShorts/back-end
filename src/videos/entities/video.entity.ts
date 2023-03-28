@@ -42,6 +42,6 @@ export class Video extends BaseEntity {
   @Column()
   commentNum: number;
 
-  @Column('simple-json')
+  @Column('json')
   category: { id: number; name: string };
 }
