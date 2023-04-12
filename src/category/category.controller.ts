@@ -12,40 +12,32 @@ export class CategoryController {
   필요한 메소드
   1. 유저 정보 등록
   2. 유저 정보 삭제
-  3. 다중 카테고리 등록
-  4. 다중 카테고리 삭제
-  5. 유저 정보(유저Id)
-  6. 유저 정보(카테고리ID)
+  3. 조건에 맞는 정보 삭제
+  4. 유저 정보(유저Id)
+  5. 유저 정보(카테고리ID)
    */
-  @Post('input')
+  @Post()
   async inputUser(@Body() body){
     return await this.categoryService.create(body);
   }
 
-  @Delete('delete')
-  async delUser(@Body() body){
-    return await this.categoryService.remove(body);
+  @Delete(':userId')
+  async delUser(@Param() userId:number){
+    return await this.categoryService.removeByUserId(userId);
+  }
+  
+  @Delete()
+  async detailDelUser(@Body() body:CreateCategoryDto){
+    return await this.categoryService.detailDelUser(body);
   }
 
-  @Post('muti/input')
-  async mutiInputUser(@Body() body){
-    //여러개 한번에 생성하는 방법
-    return await this.categoryService.create(body);
-  }
-
-  @Delete('muti/delete')
-  async mutiDelUser(@Body() body){
-    //조건에 맞는 리스트 삭제
-    return await this.categoryService.remove(body);
-  }
-
-  @Get(':userId')
+  @Get('/userId/:userId')
   async findUser(@Param('userId') userId:number){
     return await this.categoryService.findByUserId(userId)
   }
-
-  @Get(':categoryId')
+  @Get('/category/:categoryId')
   async findCategory(@Param('categoryId') categoryId:number){
-    return await this.categoryService.findByCategoryId(categoryId)
+    return await this.categoryService.findCategory(categoryId)
   }
+
 }

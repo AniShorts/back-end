@@ -12,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({
     orderBy:{
-        userId: 'DESC'
+        id: 'DESC'
       }
   })
 
@@ -23,7 +23,8 @@ export class Categorylist {
 
     @ApiProperty()
     @PrimaryColumn({
-        type: 'int',
+        type: 'varchar',
         comment: 'category name',
     })
-    category:string;}
+    category:string;
+  }

@@ -9,18 +9,18 @@ export class CategorylistController {
 
   /*
   필요한 메소드
-  1. 카테고리 등록
-  2. 카테고리 삭제
-  3. 카테고리 목록 
+  1. 카테고리 목록 
+  2. 카테고리 등록
+  3. 카테고리 삭제
   4. 카테고리 수정
    */
-  @Get('list')
+  @Get('')
   async categoryList(){
     return await this.categorylistService.findAll();
   }
 
-  @Post('input')
-  async inputCategory(@Body() body){
+  @Post('')
+  async inputCategory(@Body() body:CreateCategorylistDto){
     return await this.categorylistService.create(body);
   }
 
@@ -31,7 +31,8 @@ export class CategorylistController {
 
   @Patch(':id')
   async editCategory(@Param("id") id:number,@Body() body){
-    return await this.categorylistService.update(id,body);
+    console.log(body)
+    return await this.categorylistService.update(id,body.category);
   }
 
 }

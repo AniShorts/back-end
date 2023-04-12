@@ -11,18 +11,37 @@ export class CategoryService {
     this.categoryRepository = categoryRepository;
   }
   async create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+    return await this.categoryRepository.save(createCategoryDto);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} category`;
+  async removeByUserId(userId: number) {
+    return await this.categoryRepository.delete({
+      userId:userId
+    })
+    // return `This action removes a #${id} category`;
+  }
+  
+  async detailDelUser(createCategoryDto: CreateCategoryDto) {
+    return await this.categoryRepository.delete({
+      ...createCategoryDto
+    })
   }
 
-  async findByUserId(userId:number){
-    return 'test'
+  async findByUserId(userId:number):Promise<Category[]>{
+    let  list=await this.categoryRepository.find({
+      where:{
+        userId:userId
+      }
+    })
+    return list
   }
-
-  async findByCategoryId(categoryId:number){
-    return 'cate'
+  
+  async findCategory(categoryId:number):Promise<Category[]>{
+    let  list=await this.categoryRepository.find({
+      where:{
+        categoryId:categoryId
+      }
+    })
+    return list
   }
 }

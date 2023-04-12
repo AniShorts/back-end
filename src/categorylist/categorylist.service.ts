@@ -11,23 +11,26 @@ export class CategorylistService {
     this.categorylistRepository = categorylistRepository;
   }
   
-  create(createCategorylistDto: CreateCategorylistDto) {
-    return 'This action adds a new categorylist';
+  async create(createCategorylistDto: CreateCategorylistDto) {
+    return await this.categorylistRepository.save(
+      createCategorylistDto
+    )
   }
 
-  findAll() {
-    return `This action returns all categorylist`;
+  async findAll():Promise<Categorylist[]> {
+    const list= await this.categorylistRepository.find();
+    return list
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} categorylist`;
+  async update(id: number, category: string) {
+    return await this.categorylistRepository.update({id:id},{
+      category:category
+    })
   }
 
-  update(id: number, updateCategorylistDto: UpdateCategorylistDto) {
-    return `This action updates a #${id} categorylist`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} categorylist`;
+  async remove(id: number) {
+    return await this.categorylistRepository.delete({
+      id:id
+    })
   }
 }
