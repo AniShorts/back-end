@@ -15,7 +15,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
+import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
+import { Chatting } from './chattings/entities/chatting.entity';
 const ENV = process.env;
 
 @Module({
@@ -33,7 +35,7 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users, Video],
+      entities: [Users,Chatting,Walk],
       synchronize: true,
     }),
     UsersModule,
@@ -51,4 +53,6 @@ const ENV = process.env;
   controllers: [AppController],
   providers: [AppService],
 })
+
+
 export class AppModule {}
