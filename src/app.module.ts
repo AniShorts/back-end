@@ -17,6 +17,10 @@ import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
 import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
+import { CategoryModule } from './category/category.module';
+import { CategorylistModule } from './categorylist/categorylist.module';
+import { Category } from './category/entities/category.entity';
+import { Categorylist } from './categorylist/entities/categorylist.entity';
 const ENV = process.env;
 
 @Module({
@@ -34,7 +38,7 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users],
+      entities: [Users, Video, Category, Categorylist, Walk],
       synchronize: true,
     }),
     UsersModule,
