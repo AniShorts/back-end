@@ -17,11 +17,21 @@ import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
 import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
+<<<<<<< HEAD
+=======
+import { CategoryController } from './category/category.controller';
+>>>>>>> acb1b034b43c1af5c0712cece629d135adb39b94
 import { CategoryModule } from './category/category.module';
 import { CategorylistModule } from './categorylist/categorylist.module';
 import { Category } from './category/entities/category.entity';
 import { Categorylist } from './categorylist/entities/categorylist.entity';
+<<<<<<< HEAD
 const ENV = process.env;
+=======
+import { Chatting } from './chattings/entities/chatting.entity';
+const ENV = process.env;
+
+>>>>>>> acb1b034b43c1af5c0712cece629d135adb39b94
 
 @Module({
   imports: [
@@ -38,7 +48,12 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
+<<<<<<< HEAD
       entities: [Users, Video, Category, Categorylist, Walk],
+=======
+      entities: [Users,Walk,Category,Categorylist,Video,Chatting],
+
+>>>>>>> acb1b034b43c1af5c0712cece629d135adb39b94
       synchronize: true,
     }),
     UsersModule,

@@ -19,7 +19,7 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto):Promise<Object> {
     delete createUserDto.userId;
     let nickname_check=await this.findOneByNickname(createUserDto.nickname)
-    if(nickname_check===null){
+    if(nickname_check!==null){
       throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
       const hashedPassword = await hash(createUserDto.password, 10);
@@ -41,11 +41,12 @@ export class UsersService {
   변수 nickname을 받아 중복을 확인하는 코드
    */
   async findOneByNickname(nickname:string): Promise<Users> {
-    return await this.userRepository.findOne({
+    const result=await this.userRepository.findOne({
       where: {
         nickname:nickname,
       }
     })
+    return result;
   }
 
   // //카테고리 업데이트
