@@ -19,7 +19,6 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto):Promise<Object> {
     delete createUserDto.userId;
     let nickname_check=await this.findOneByNickname(createUserDto.nickname)
-    console.log(nickname_check)
     if(nickname_check!==null){
       throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
@@ -47,7 +46,6 @@ export class UsersService {
         nickname:nickname,
       }
     })
-    console.log(result)
     return result;
   }
 
