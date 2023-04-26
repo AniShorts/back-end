@@ -17,7 +17,12 @@ import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
 import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
-const ENV = process.env;
+import { CategoryController } from './category/category.controller';
+import { CategoryModule } from './category/category.module';
+import { Category } from './category/entities/category.entity';
+import { CategorylistModule } from './categorylist/categorylist.module';
+import { Categorylist } from './categorylist/entities/categorylist.entity';
+const ENV=process.env;
 
 @Module({
   imports: [
@@ -34,7 +39,7 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users,],
+      entities: [Users,Walk,Category,Categorylist],
       synchronize: true,
     }),
     UsersModule,
@@ -48,6 +53,8 @@ const ENV = process.env;
     VideocommentsModule,
     ChattingsModule,
     AuthModule,
+    CategoryModule,
+    CategorylistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
