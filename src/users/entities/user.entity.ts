@@ -47,13 +47,6 @@ export class Users {
   
   @ApiProperty()
   @Column({
-      type: 'json',
-      comment: 'like_animal_kind',
-    })
-  category:object[];
-  
-  @ApiProperty()
-  @Column({
       type: 'varchar',
       comment: 'profile_img',
     })
