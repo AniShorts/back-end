@@ -22,7 +22,9 @@ import { CategoryModule } from './category/category.module';
 import { Category } from './category/entities/category.entity';
 import { CategorylistModule } from './categorylist/categorylist.module';
 import { Categorylist } from './categorylist/entities/categorylist.entity';
-const ENV=process.env;
+import { Chatting } from './chattings/entities/chatting.entity';
+const ENV = process.env;
+
 
 @Module({
   imports: [
@@ -39,7 +41,8 @@ const ENV=process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users,Walk,Category,Categorylist],
+      entities: [Users,Walk,Category,Categorylist,Video,Chatting],
+
       synchronize: true,
     }),
     UsersModule,
@@ -59,4 +62,6 @@ const ENV=process.env;
   controllers: [AppController],
   providers: [AppService],
 })
+
+
 export class AppModule {}

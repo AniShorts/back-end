@@ -1,3 +1,4 @@
+import { Users } from 'src/users/entities/user.entity';
 import {
   BaseEntity,
   Column,
@@ -8,17 +9,13 @@ import {
   Entity,
 } from 'typeorm';
 
-//import { User } from '../../users/entities';
-
 @Entity()
 export class Video extends BaseEntity {
   @PrimaryGeneratedColumn()
   videoId: number;
 
-  /* @ManyToOne(() => User, (user) => user.videos)
-  user: User; */
-
   @Column()
+  @ManyToOne(() => Users, users => users.userId)
   userId: number;
 
   @Column()
@@ -42,6 +39,6 @@ export class Video extends BaseEntity {
   @Column()
   commentNum: number;
 
-  @Column('simple-json')
+  @Column('json')
   category: { id: number; name: string };
 }
