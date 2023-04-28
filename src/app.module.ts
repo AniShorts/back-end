@@ -23,6 +23,7 @@ import { CategorylistModule } from './categorylist/categorylist.module';
 import { Category } from './category/entities/category.entity';
 import { Categorylist } from './categorylist/entities/categorylist.entity';
 import { Chatting } from './chattings/entities/chatting.entity';
+import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 const ENV = process.env;
 
 @Module({
@@ -57,6 +58,7 @@ const ENV = process.env;
     AuthModule,
     CategoryModule,
     CategorylistModule,
+    CategoryvideoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
