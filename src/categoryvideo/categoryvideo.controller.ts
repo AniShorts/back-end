@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CategoryvideoService } from './categoryvideo.service';
 import { CreateCategoryvideoDto } from './dto/create-categoryvideo.dto';
 import { UpdateCategoryvideoDto } from './dto/update-categoryvideo.dto';
@@ -8,27 +16,26 @@ export class CategoryvideoController {
   constructor(private readonly categoryvideoService: CategoryvideoService) {}
 
   @Post()
-  create(@Body() createCategoryvideoDto: CreateCategoryvideoDto) {
-    return this.categoryvideoService.create(createCategoryvideoDto);
+  async inputVideo(@Body() body) {
+    return await this.categoryvideoService.create(body);
   }
 
-  @Get()
-  findAll() {
-    return this.categoryvideoService.findAll();
+  @Delete(':videoId')
+  async delVideo(@Param() videoId: number) {
+    return await this.categoryvideoService.removeByVideoId(videoId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryvideoService.findOne(+id);
+  @Delete()
+  async detailDelVideo(@Body() body: CreateCategoryvideoDto) {
+    return await this.categoryvideoService.detailDelVideo(body);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryvideoDto: UpdateCategoryvideoDto) {
-    return this.categoryvideoService.update(+id, updateCategoryvideoDto);
+  @Get('/videoId/:videoId')
+  async findVideo(@Param('videoId') videoId: number) {
+    return await this.categoryvideoService.findByVideoId(videoId);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryvideoService.remove(+id);
+  @Get('/category/:categoryId')
+  async findCategory(@Param('categoryId') categoryId: number) {
+    return await this.categoryvideoService.findCategory(categoryId);
   }
 }
