@@ -14,10 +14,7 @@ export class VideosService {
   ) {}
   //동영상 업로드
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
-    const userId = 1;
-
     const newVideo = this.videosRepository.create({
-      userId,
       ...createVideoDto,
     });
     return await this.videosRepository.save(newVideo);
