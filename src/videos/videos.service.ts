@@ -6,6 +6,7 @@ import { SearchVideoDto } from './dto/search-video.dto';
 import { Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
 import { Like } from 'typeorm';
+import { Users } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class VideosService {
@@ -13,7 +14,12 @@ export class VideosService {
     @InjectRepository(Video) private videosRepository: Repository<Video>,
   ) {}
   //동영상 업로드
-  async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
+  async createVideo(
+    userId: number,
+    createVideoDto: CreateVideoDto,
+  ): Promise<Video> {
+    console.log(userId);
+    createVideoDto.userId = userId;
     const newVideo = this.videosRepository.create({
       ...createVideoDto,
     });

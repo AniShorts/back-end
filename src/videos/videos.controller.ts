@@ -8,21 +8,26 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
 import { Video } from './entities/video.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common/decorators';
 
 @Controller('videos')
 export class VideosController {
   constructor(private readonly videosService: VideosService) {}
 
   //동영상 업로드
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createVideo(@Body() createVideoDto: CreateVideoDto) {
-    return await this.videosService.createVideo(createVideoDto);
+  async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
+    const { userId } = request.user;
+    return await this.videosService.createVideo(userId, createVideoDto);
   }
 
   //전체 동영상
