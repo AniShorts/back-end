@@ -26,7 +26,7 @@ export class Categoryvideo {
   @ApiProperty()
   @PrimaryColumn({
     type: 'int',
-    comment: 'video id',
+    comment: 'category id',
   })
   categoryId: number;
 }
