@@ -9,6 +9,8 @@ import {
   Delete,
   Query,
   Req,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
@@ -69,8 +71,17 @@ export class VideosController {
     return await this.videosService.updateVideo(+id, updateVideoDto);
   }
   //동영상 삭제
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteVideo(@Param('id') id: number) {
-    return await this.videosService.deleteVideo(+id);
+  async deleteVideo(@Req() request, @Param('id') videoId: number) {
+    const { userId } = request.user;
+    const video = await this.videosService.findOneVideo(videoId);
+    if (userId !== video.videoId) {
+      throw new HttpException(
+        'Not same user created video',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    return await this.videosService.deleteVideo(userId, +videoId);
   }
 }
