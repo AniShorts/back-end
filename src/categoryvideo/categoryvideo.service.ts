@@ -19,21 +19,21 @@ export class CategoryvideoService {
 
   async removeByVideoId(videoId: number) {
     return await this.categoryvideoRepository.delete({
-      videoId: videoId,
+      video:{videoId:videoId},
     });
     // return `This action removes a #${id} category`;
   }
 
   async detailDelVideo(createCategoryvideoDto: CreateCategoryvideoDto) {
     return await this.categoryvideoRepository.delete({
-      ...createCategoryvideoDto,
+      video:{videoId:createCategoryvideoDto.video.videoId},categoryId:createCategoryvideoDto.categoryId
     });
   }
 
   async findByVideoId(videoId: number): Promise<Categoryvideo[]> {
     let list = await this.categoryvideoRepository.find({
       where: {
-        videoId: videoId,
+        video:{videoId:videoId},
       },
     });
     return list;

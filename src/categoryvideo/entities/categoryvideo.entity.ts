@@ -6,9 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm/index';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { Video } from 'src/videos/entities/video.entity';
 
 @Entity({
   orderBy: {
@@ -16,15 +19,15 @@ import { ApiProperty } from '@nestjs/swagger';
   },
 })
 export class Categoryvideo {
-  @ApiProperty()
-  @PrimaryColumn({
-    type: 'int',
-    comment: 'video id',
-  })
-  videoId: number;
+  @PrimaryGeneratedColumn('increment')
+  @PrimaryColumn()
+  id:number;
 
-  @ApiProperty()
-  @PrimaryColumn({
+  @ManyToOne((type) => Video)
+  @JoinColumn({name:"videoId",referencedColumnName: "videoId" })
+  video: Video;
+
+  @Column({
     type: 'int',
     comment: 'video id',
   })
