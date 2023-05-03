@@ -29,6 +29,7 @@ export class VideosController {
   @Post()
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
     const { userId } = request.user;
+    createVideoDto.userId = userId;
     return await this.videosService.createVideo(userId, createVideoDto);
   }
 

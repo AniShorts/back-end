@@ -28,7 +28,7 @@ export class VideosService {
     const newVideo = this.videosRepository.create({
       ...createVideoDto,
     });
-    //newVideo.userId = userId;
+    newVideo.userId = userId;
     return await this.videosRepository.save(newVideo);
   }
   //전체 동영상
