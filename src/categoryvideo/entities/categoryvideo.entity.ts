@@ -23,8 +23,8 @@ export class Categoryvideo {
   @PrimaryColumn()
   id:number;
 
-  @ManyToOne((type) => Video)
-  @JoinColumn({name:"videoId",referencedColumnName: "videoId" })
+  @ManyToOne((type) => Video,{ nullable: false })
+  @JoinColumn({name:"videoId",referencedColumnName: "videoId"})
   video: Video;
 
   @Column({

@@ -4,6 +4,7 @@ import { UpdateCategoryvideoDto } from './dto/update-categoryvideo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categoryvideo } from './entities/categoryvideo.entity';
 import { Repository } from 'typeorm';
+import internal from 'stream';
 
 @Injectable()
 export class CategoryvideoService {
@@ -13,8 +14,8 @@ export class CategoryvideoService {
   ) {
     this.categoryvideoRepository = categoryvideoRepository;
   }
-  async create(createCategoryvideoDto: CreateCategoryvideoDto) {
-    return await this.categoryvideoRepository.save(createCategoryvideoDto);
+  async create(body:{videoId:number,categoryId:number}) {
+    return await this.categoryvideoRepository.save({video:{videoId:body.videoId},categoryId:body.categoryId});
   }
 
   async removeByVideoId(videoId: number) {
