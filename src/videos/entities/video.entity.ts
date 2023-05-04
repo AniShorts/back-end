@@ -21,11 +21,11 @@ import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.videoId)
+  @OneToMany(type => Categoryvideo, categoryvideo => categoryvideo.video)
   videoId: number;
 
   @ApiProperty()
-  @ManyToOne(() => Users, (users) => users.userId)
+  // @ManyToOne(() => Users, (users) => users.userId)
   @Column({
     type: 'int',
     comment: 'user`s unique number',

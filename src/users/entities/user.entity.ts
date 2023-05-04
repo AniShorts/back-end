@@ -25,7 +25,7 @@ export class Users {
   userId:number;
 
   @ApiProperty()
-  @PrimaryColumn({
+  @Column({
       type: 'varchar',
       comment: 'nickname',
   })
