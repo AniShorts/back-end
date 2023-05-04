@@ -9,6 +9,7 @@ import {
 } from 'typeorm/index';
 import { ApiProperty } from '@nestjs/swagger';
 import {Video} from '../../videos/entities/video.entity'
+import { Walk } from 'src/walks/entities/walk.entity';
 
 @Entity({
   orderBy:{
@@ -17,13 +18,14 @@ import {Video} from '../../videos/entities/video.entity'
 })
 export class Users {
   
-  // @OneToMany(() => Video, (video:Video) => video.userId)
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
+  @OneToMany(() => Video, video => video.userId)
+  @OneToMany(() => Walk, walk => walk.userId)
   userId:number;
 
   @ApiProperty()
-  @PrimaryColumn({
+  @Column({
       type: 'varchar',
       comment: 'nickname',
   })
@@ -42,13 +44,6 @@ export class Users {
       comment: 'phonenumber',
     })
   phone:string;
-  
-  @ApiProperty()
-  @Column({
-      type: 'json',
-      comment: 'like_animal_kind',
-    })
-  category:object[];
   
   @ApiProperty()
   @Column({

@@ -8,15 +8,12 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
 import { Video } from './entities/video.entity';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('videos')
 export class VideosController {
@@ -25,13 +22,8 @@ export class VideosController {
   //동영상 업로드
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createVideo(@Body() createVideoDto: CreateVideoDto, @Req() req) {
-    const { userId } = req.user;
-    const videoData = {
-      ...createVideoDto,
-      userId,
-    };
-    return await this.videosService.createVideo(videoData);
+  async createVideo(@Body() createVideoDto: CreateVideoDto) {
+    return await this.videosService.createVideo(createVideoDto);
   }
 
   //전체 동영상
@@ -73,8 +65,17 @@ export class VideosController {
     return await this.videosService.updateVideo(+id, updateVideoDto);
   }
   //동영상 삭제
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteVideo(@Param('id') id: number) {
-    return await this.videosService.deleteVideo(+id);
+  async deleteVideo(@Req() request, @Param('id') videoId: number) {
+    const { userId } = request.user;
+    const video = await this.videosService.findOneVideo(videoId);
+    if (userId !== video.videoId) {
+      throw new HttpException(
+        'Not same user created video',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    return await this.videosService.deleteVideo(userId, +videoId);
   }
 }

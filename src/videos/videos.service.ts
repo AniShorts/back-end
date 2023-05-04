@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
@@ -6,6 +11,8 @@ import { SearchVideoDto } from './dto/search-video.dto';
 import { Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
 import { Like } from 'typeorm';
+import { Users } from 'src/users/entities/user.entity';
+import { error } from 'console';
 
 @Injectable()
 export class VideosService {
@@ -59,8 +66,8 @@ export class VideosService {
     return updatedVideo;
   }
   //동영상 삭제
-  async deleteVideo(id: number) {
-    const result = await this.videosRepository.delete(id);
+  async deleteVideo(userId: number, videoId: number) {
+    const result = await this.videosRepository.delete(videoId);
     return result;
   }
 
