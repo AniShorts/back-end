@@ -20,15 +20,10 @@ export class VideosService {
     @InjectRepository(Video) private videosRepository: Repository<Video>,
   ) {}
   //동영상 업로드
-  async createVideo(
-    userId: number,
-    createVideoDto: CreateVideoDto,
-  ): Promise<Video> {
-    console.log(userId);
+  async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
     const newVideo = this.videosRepository.create({
       ...createVideoDto,
     });
-    newVideo.userId = userId;
     return await this.videosRepository.save(newVideo);
   }
   //전체 동영상

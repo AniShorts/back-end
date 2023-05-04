@@ -30,7 +30,7 @@ export class VideosController {
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
     const { userId } = request.user;
     createVideoDto.userId = userId;
-    return await this.videosService.createVideo(userId, createVideoDto);
+    return await this.videosService.createVideo(createVideoDto);
   }
 
   //전체 동영상
