@@ -69,8 +69,16 @@ export class UsersService {
     return await this.userRepository.delete({userId})
   }
 
-  async getUserRefreshTokenMatches(refresh:string, userId:number){
-    const userInfo:Users=await this.findOneByUserId(userId);
+  async saveRefreshToken(refresh:string, userId:number){
+    await this.userRepository.update({userId},{
+      refresh
+    })
+    return;
+  }
+  async saveAccessToken(access:string, userId:number){
+    await this.userRepository.update({userId},{
+      access
+    })
     return;
   }
 }

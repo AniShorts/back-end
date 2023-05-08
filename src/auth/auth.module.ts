@@ -7,7 +7,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 const ENV=process.env;
 
 @Module({
@@ -20,9 +19,6 @@ const ENV=process.env;
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-        signOptions: { expiresIn:`${config.get(
-          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}`+'d' },
       }),
     }),
   ],

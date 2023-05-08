@@ -2,14 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,Htt
 import { UsersService } from './users.service';
 import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RefreshAuthGuard } from 'src/auth/guards/refresh-auth.guard';
 import { CreateUserDto } from './dto/create-users.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './userAnyType'
 import { HttpStatus } from '@nestjs/common/enums';
 import { resourceLimits } from 'worker_threads';
 import { Request, Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @Controller('users')

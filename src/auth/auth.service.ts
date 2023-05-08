@@ -27,9 +27,26 @@ export class AuthService {
   }
 
   async createAccessToken(payload:Object){
-    return {
-      token:this.jwtService.sign(payload)
-    }
+    return this.jwtService.sign(payload,{
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn:`${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}`+'h',
+    })
+  }
+  async createRefreshToken(payload:Object){
+    return this.jwtService.sign(payload,{
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}d`,
+    })
+  }
+  async saveRefreshToken(token:string,userId:number){
+    return this.usersService.saveRefreshToken(token,userId)
+  }
+  async saveAccessToken(token:string,userId:number){
+    return this.usersService.saveAccessToken(token,userId)
   }
 
   async tokenVerify(token:string): Promise<Users> {
