@@ -25,6 +25,13 @@ export class AuthService {
     }
     return null;
   }
+  async validateRefresh(refresh:string,userId:number): Promise<Boolean> {
+    const user=await this.usersService.findOneByUserId(userId)
+    if(refresh===user.refresh){
+      return true
+    }
+    return false;
+  }
 
   async createAccessToken(payload:Object){
     return this.jwtService.sign(payload,{
@@ -43,10 +50,15 @@ export class AuthService {
     })
   }
   async saveRefreshToken(token:string,userId:number){
-    return this.usersService.saveRefreshToken(token,userId)
+    return await this.usersService.saveRefreshToken(token,userId)
   }
   async saveAccessToken(token:string,userId:number){
-    return this.usersService.saveAccessToken(token,userId)
+    return await this.usersService.saveAccessToken(token,userId)
+  }
+
+  async getRefreshToken(access:string, refresh:string): Promise<String>{
+    const user=await this.usersService.findOneByToken(access,refresh)
+    return await this.createRefreshToken({userId:user.userId})
   }
 
   async tokenVerify(token:string): Promise<Users> {

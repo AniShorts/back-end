@@ -7,6 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 const ENV=process.env;
 
 @Module({
@@ -22,7 +23,7 @@ const ENV=process.env;
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy,LocalStrategy],
+  providers: [AuthService, JwtStrategy,LocalStrategy,RefreshStrategy],
   exports: [AuthService, JwtModule],
   controllers: [AuthController],
 })
