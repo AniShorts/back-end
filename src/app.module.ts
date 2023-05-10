@@ -47,9 +47,7 @@ const ENV = process.env;
         Walk,
         Category,
         Categorylist,
-        Video,
         Chatting,
-        Categoryvideo,
       ],
 
       synchronize: true,
@@ -67,7 +65,7 @@ const ENV = process.env;
     AuthModule,
     CategoryModule,
     CategorylistModule,
-    CategoryvideoModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],
