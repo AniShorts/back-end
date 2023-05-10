@@ -49,6 +49,16 @@ export class UsersService {
     return result;
   }
 
+  async findOneByToken(access:string,refresh:string): Promise<Users>{
+    const user=await this.userRepository.findOne({
+      where:{
+        access,
+        refresh
+      }
+    })
+    return user
+  }
+
   // //카테고리 업데이트
   // async inputCategory(userId:number,category:object[]){
   //   return await this.userRepository.update({userId},{  
@@ -69,8 +79,16 @@ export class UsersService {
     return await this.userRepository.delete({userId})
   }
 
-  async getUserRefreshTokenMatches(refresh:string, userId:number){
-    const userInfo:Users=await this.findOneByUserId(userId);
+  async saveRefreshToken(refresh:string, userId:number){
+    await this.userRepository.update({userId},{
+      refresh
+    })
+    return;
+  }
+  async saveAccessToken(access:string, userId:number){
+    await this.userRepository.update({userId},{
+      access
+    })
     return;
   }
 }

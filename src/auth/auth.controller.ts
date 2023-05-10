@@ -1,6 +1,7 @@
-import { Controller} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {UsersService} from '../users/users.service'
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -8,5 +9,17 @@ export class AuthController {
     private authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
+  /*
+  access토큰이 만료될경우 refresh토큰을 refresh로 refresh token을 받아서 access 토큰을 발급받는다.
+  */ 
+  @UseGuards(AuthGuard('refresh'))
+  @Post()
+  async getAccessToken(@Req() req) {
+      return req.user
+  }
 
+  @Post('getRefresh')
+  async getRefreshToken(@Body() body:{access:string,refresh:string}) {
+    return {refresh:await this.authService.getRefreshToken(body.access,body.refresh)}
+  }
 }
