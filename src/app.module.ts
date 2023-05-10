@@ -19,12 +19,13 @@ import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
 import { CategoryController } from './category/category.controller';
 import { CategoryModule } from './category/category.module';
-import { Category } from './category/entities/category.entity';
 import { CategorylistModule } from './categorylist/categorylist.module';
+import { Category } from './category/entities/category.entity';
 import { Categorylist } from './categorylist/entities/categorylist.entity';
 import { Chatting } from './chattings/entities/chatting.entity';
+import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
+import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
 const ENV = process.env;
-
 
 @Module({
   imports: [
@@ -41,7 +42,15 @@ const ENV = process.env;
       username: ENV.DATABASE_USERNAME,
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
-      entities: [Users,Walk,Category,Categorylist,Video,Chatting],
+      entities: [
+        Users,
+        Walk,
+        Category,
+        Categorylist,
+        Video,
+        Chatting,
+        Categoryvideo,
+      ],
 
       synchronize: true,
     }),
@@ -58,10 +67,9 @@ const ENV = process.env;
     AuthModule,
     CategoryModule,
     CategorylistModule,
+    CategoryvideoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-
 export class AppModule {}

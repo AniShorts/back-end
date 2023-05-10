@@ -52,4 +52,18 @@ export class Users {
     })
   profileImg:string;
 
+  @ApiProperty()
+  @Column({
+      type: 'varchar',
+      comment: 'access_token',
+    })
+  access:string;
+
+  @ApiProperty()
+  @Column({
+      type: 'varchar',
+      comment: 'refresh_token',
+    })
+    refresh:string;
+
 }
