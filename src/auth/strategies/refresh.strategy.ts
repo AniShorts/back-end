@@ -17,11 +17,11 @@ export class RefreshStrategy extends PassportStrategy(Strategy,'refresh') {
     try {
         const userId=(await this.jwt.verify(refresh,{secret:this.config.get('JWT_REFRESH_TOKEN_SECRET')})).userId
         if(!userId){
-            throw new UnauthorizedException();
+          throw new Error('Expired Refresh');
         }
         const auth = await this.authService.validateRefresh(refresh,userId);
         if (!auth) {
-            throw new UnauthorizedException();
+          throw new Error('Invalid Access/Refresh Token');
         }
         const access_token=await this.authService.createAccessToken({userId:userId});
         await this.authService.saveAccessToken(access_token,userId)
