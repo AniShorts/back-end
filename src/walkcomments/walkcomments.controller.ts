@@ -12,23 +12,4 @@ export class WalkcommentsController {
     return this.walkcommentsService.create(createWalkcommentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.walkcommentsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.walkcommentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalkcommentDto: UpdateWalkcommentDto) {
-    return this.walkcommentsService.update(+id, updateWalkcommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.walkcommentsService.remove(+id);
-  }
 }

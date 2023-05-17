@@ -10,6 +10,7 @@ import {
   } from 'typeorm/index';
 import { ApiProperty } from '@nestjs/swagger';
 import { Users } from 'src/users/entities/user.entity';
+import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
   
 @Entity({
 orderBy:{
@@ -20,6 +21,7 @@ orderBy:{
 export class Walk {
     @ApiProperty()
     @PrimaryGeneratedColumn('increment')
+    @OneToMany(type => Walkcomment, walkcomment => walkcomment.walk)
     walkId:number;
     
     @ApiProperty()

@@ -10,6 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import {Video} from '../../videos/entities/video.entity'
 import { Walk } from 'src/walks/entities/walk.entity';
+import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
 
 @Entity({
   orderBy:{
@@ -22,6 +23,7 @@ export class Users {
   @PrimaryGeneratedColumn('increment')
   @OneToMany(() => Video, video => video.userId)
   @OneToMany(() => Walk, walk => walk.userId)
+  @OneToMany(type => Walkcomment, walkcomment => walkcomment.user)
   userId:number;
 
   @ApiProperty()
