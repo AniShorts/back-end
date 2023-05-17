@@ -25,11 +25,40 @@ export class AuthService {
     }
     return null;
   }
+  async validateRefresh(refresh:string,userId:number): Promise<Boolean> {
+    const user=await this.usersService.findOneByUserId(userId)
+    if(refresh===user.refresh){
+      return true
+    }
+    return false;
+  }
 
   async createAccessToken(payload:Object){
-    return {
-      token:this.jwtService.sign(payload)
-    }
+    return this.jwtService.sign(payload,{
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn:`${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}`+'h',
+    })
+  }
+  async createRefreshToken(payload:Object){
+    return this.jwtService.sign(payload,{
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}d`,
+    })
+  }
+  async saveRefreshToken(token:string,userId:number){
+    return await this.usersService.saveRefreshToken(token,userId)
+  }
+  async saveAccessToken(token:string,userId:number){
+    return await this.usersService.saveAccessToken(token,userId)
+  }
+
+  async getRefreshToken(access:string, refresh:string): Promise<String>{
+    const user=await this.usersService.findOneByToken(access,refresh)
+    return await this.createRefreshToken({userId:user.userId})
   }
 
   async tokenVerify(token:string): Promise<Users> {
