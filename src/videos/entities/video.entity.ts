@@ -1,4 +1,3 @@
-import { Users } from 'src/users/entities/user.entity';
 import {
   BaseEntity,
   Column,
@@ -10,6 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 
+import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
 
@@ -21,12 +21,15 @@ import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.videoId)
+  @OneToMany((type) => Categoryvideo, (categoryvideo) => categoryvideo.video)
   videoId: number;
 
   @ApiProperty()
-  @Column()
   @ManyToOne(() => Users, (users) => users.userId)
+  @Column({
+    type: 'int',
+    comment: 'user`s unique number',
+  })
   userId: number;
 
   @ApiProperty()
