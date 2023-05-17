@@ -8,12 +8,17 @@ import {
   Param,
   Delete,
   Query,
+  HttpException,
+  UseGuards,
+  HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
 import { Video } from './entities/video.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('videos')
 export class VideosController {

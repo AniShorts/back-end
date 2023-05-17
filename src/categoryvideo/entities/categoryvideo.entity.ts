@@ -21,10 +21,10 @@ import { Video } from 'src/videos/entities/video.entity';
 export class Categoryvideo {
   @PrimaryGeneratedColumn('increment')
   @PrimaryColumn()
-  id:number;
+  id: number;
 
-  @ManyToOne((type) => Video,{ nullable: false })
-  @JoinColumn({name:"videoId",referencedColumnName: "videoId"})
+  @ManyToOne((type) => Video, { nullable: false })
+  @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
   video: Video;
 
   @Column({

@@ -1,11 +1,36 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Entity,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { Users } from 'src/users/entities/user.entity';
+import { Video } from 'src/videos/entities/video.entity';
 
-@Entity()
-export class Videolike {
-  @PrimaryColumn()
+@Entity({
+  orderBy: {
+    videoLikeId: 'DESC',
+  },
+})
+export class Videolike extends BaseEntity {
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
   videoLikeId: number;
 
-  @Column()
+  @ManyToOne((type) => Video, { nullable: false })
+  @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
+  video: Video;
+
+  @ApiProperty()
+  @ManyToOne(() => Users, (users) => users.userId)
+  @Column({
+    type: 'int',
+    comment: 'user`s unique number',
+  })
   userId: number;
 
   @Column()
