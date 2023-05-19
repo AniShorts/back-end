@@ -21,7 +21,7 @@ import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany((type) => Categoryvideo, (categoryvideo) => categoryvideo.video)
+  //@OneToMany((type) => Categoryvideo, (categoryvideo) => categoryvideo.video)
   videoId: number;
 
   @ApiProperty()
@@ -63,4 +63,8 @@ export class Video extends BaseEntity {
   @ApiProperty()
   @Column('json')
   category: { id: number; name: string };
+
+  @ApiProperty()
+  //@OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
+  categoryVideos: Categoryvideo[];
 }
