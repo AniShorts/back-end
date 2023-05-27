@@ -4,10 +4,14 @@ import { UpdateWalkcommentDto } from './dto/update-walkcomment.dto';
 import { Walkcomment } from './entities/walkcomment.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class WalkcommentsService {
-  constructor(@InjectRepository(Walkcomment) private walkcommentRepository: Repository<Walkcomment>){
+  constructor(
+    @InjectRepository(Walkcomment) private walkcommentRepository: Repository<Walkcomment>,
+    private readonly usersService:UsersService
+    ){
     this.walkcommentRepository=walkcommentRepository;
   }
   
@@ -60,26 +64,49 @@ export class WalkcommentsService {
           walkId
         }
       },
+      relations:{
+        user:true,
+        walk:true
+      },
+      select:{
+        user:{userId:true},
+        walk:{walkId:true}
+      },
       order:{
-        walkCommentId:'DESC'
+        walkCommentId:'DESC',
       },
       skip:pageSize*(pageNum-1),
       take:pageSize,
     })
+    
+    for(let ele of list[0]){
+      ele["userId"]=ele.user.userId
+      delete ele["user"]
+      ele["walkId"]=ele.walk.walkId
+      delete ele["walk"]
+    }
     return list;
   }
 
-  async updateByWalkCommentId(walkCommentId: number, updateWalkcommentDto: UpdateWalkcommentDto) {
-    await this.walkcommentRepository.update({walkCommentId},{
-      ...updateWalkcommentDto
-    })
-    return `This action updates a #${walkCommentId} walkcomment`;
+  async updateByWalkCommentId(walkCommentId: number, updateWalkcommentDto: UpdateWalkcommentDto):Promise<Boolean> {
+    try {
+      const result=await this.walkcommentRepository.update({walkCommentId},{
+        ...updateWalkcommentDto
+      })
+      return true
+    } catch (error) {
+      return false;
+    }
   }
 
-  async removeByWalkCommentId(walkCommentId: number) {
-    await this.walkcommentRepository.delete({
-      walkCommentId
-    })
-    return `This action removes a #${walkCommentId} walkcomment`;
+  async removeByWalkCommentId(walkCommentId: number):Promise<Boolean> {
+    try {
+      await this.walkcommentRepository.delete({
+        walkCommentId
+      })
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

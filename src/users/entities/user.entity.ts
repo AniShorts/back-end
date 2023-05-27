@@ -18,12 +18,14 @@ import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
     }
 })
 export class Users {
-  
+  constructor(userId:number) {
+    this.userId = userId;
+  }
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
+  @OneToMany(() => Walkcomment, walkcomment => walkcomment.user)
   @OneToMany(() => Video, video => video.userId)
   @OneToMany(() => Walk, walk => walk.userId)
-  @OneToMany(type => Walkcomment, walkcomment => walkcomment.user)
   userId:number;
 
   @ApiProperty()

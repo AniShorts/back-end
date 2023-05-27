@@ -19,6 +19,9 @@ orderBy:{
 })
 
 export class Walk {
+  constructor(walkId:number){
+    this.walkId=walkId
+  }
     @ApiProperty()
     @PrimaryGeneratedColumn('increment')
     @OneToMany(type => Walkcomment, walkcomment => walkcomment.walk)

@@ -8,7 +8,7 @@ import { UseGuards } from '@nestjs/common/decorators';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { WalkBoardList,WalkBoardGet, WalkInput, Result, WalkUpdate } from './walkAnyType';
 //게시판 번호 크기
-const pageSize:number=10;
+const walkPageSize:number=Number(process.env.WALK_PAGESIZE);
 
 @Controller('walks')
 export class WalksController {
@@ -20,7 +20,7 @@ export class WalksController {
   @ApiResponse({status:200, description: '산책 게시물 목록을 제공받는다',type:WalkBoardList})
   @Get('/list/:pageNum')
   async walkBoardList(@Param('pageNum') pageNum:string,@Req() request,@Res() response:Response) {
-    const boardInfo=await this.walksService.boardfindAll(Number(pageNum),pageSize);
+    const boardInfo=await this.walksService.boardfindAll(Number(pageNum),walkPageSize);
     //return: {list, pageNum, pageList}
     return response.status(200).send({
       list:boardInfo.list,
@@ -67,8 +67,7 @@ export class WalksController {
   @ApiResponse({status:200, description: '산책 게시물을 수정한다.',type:Result})
   @UseGuards(JwtAuthGuard)
   @Patch(':targetWalkId')
-  async editWalkBoard(@Param('targetWalkId') targetWalkId: string,@Req() request,@Res() response:Response) {
-    const updateWalkDto:UpdateWalkDto=request.body;
+  async editWalkBoard(@Param('targetWalkId') targetWalkId: string,@Body() updateWalkDto:UpdateWalkDto,@Req() request,@Res() response:Response) {
     const userId=request.user.userId
     const walkId:number=Number(targetWalkId);
     await this.walksService.update(walkId,userId,updateWalkDto);
