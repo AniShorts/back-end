@@ -66,11 +66,10 @@ export class WalkcommentsService {
       },
       relations:{
         user:true,
-        walk:true
+        walk:false
       },
       select:{
-        user:{userId:true},
-        walk:{walkId:true}
+        user:{nickname:true},
       },
       order:{
         walkCommentId:'DESC',
@@ -80,10 +79,9 @@ export class WalkcommentsService {
     })
     
     for(let ele of list[0]){
-      ele["userId"]=ele.user.userId
+      ele["nickname"]=ele.user.nickname
       delete ele["user"]
-      ele["walkId"]=ele.walk.walkId
-      delete ele["walk"]
+      delete ele["walkCommentId"]
     }
     return list;
   }
