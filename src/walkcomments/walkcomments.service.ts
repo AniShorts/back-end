@@ -22,7 +22,8 @@ export class WalkcommentsService {
     return 'This action adds a new walkcomment';
   }
 
-  async findAllByWalkId(pageNum:number,pageSize:number,walkId:number) {
+  async findAllByWalkId(pageNum:number,walkId:number) {
+    const pageSize:number=Number(process.env.WALKCOMMENT_PAGESIZE)
     if(pageNum<=0){
       //에러 코드 수정
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);

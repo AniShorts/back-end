@@ -9,7 +9,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBea
 import { WalkBoardList,WalkBoardGet, WalkInput, Result, WalkUpdate } from './walkAnyType';
 import { Users } from 'src/users/entities/user.entity';
 //게시판 번호 크기
-const walkPageSize:number=Number(process.env.WALK_PAGESIZE);
 
 @Controller('walks')
 export class WalksController {
@@ -20,8 +19,8 @@ export class WalksController {
   @ApiOperation({ summary: '산책 게시판 목록 API', description: '산책 게시물 목록을 제공받는다.' })
   @ApiResponse({status:200, description: '산책 게시물 목록을 제공받는다',type:WalkBoardList})
   @Get('/list/:pageNum')
-  async walkBoardList(@Param('pageNum') pageNum:string,@Req() request,@Res() response:Response) {
-    const boardInfo=await this.walksService.boardfindAll(Number(pageNum),walkPageSize);
+  async walkBoardList(@Param('pageNum') pageNum:number,@Req() request,@Res() response:Response) {
+    const boardInfo=await this.walksService.boardfindAll(pageNum);
     //return: {list, pageNum, pageList}
     return response.status(200).send({
       list:boardInfo.list,
@@ -30,12 +29,16 @@ export class WalksController {
     })
   }
 
+  //기존의 api설계에서는 comment까지 같이 제공하는 것으로 되어있다.
+  //하지만 comment에도 수의 제한이 필요하다 만일 이것을 나눠어 관리한다
   //산책 게시글
   @ApiOperation({ summary: '산책 게시물 API', description: '산책 게시물을 제공받는다.' })
   @ApiResponse({status:200, description: '산책 게시물을 제공받는다',type:WalkBoardGet})
-  @Get(':targetWalkId')
-  async readWalkBoard(@Param('targetWalkId') targetWalkId:string) {
-    return await this.walksService.findOneByWalkId(Number(targetWalkId));
+  @Get(':walkId')
+  async readWalkBoard(
+    @Param('walkId') walkId:number,
+  ) {
+    return await this.walksService.findOneByWalkId(walkId);
   }
 
   //산책 게시판 작성
@@ -52,8 +55,6 @@ export class WalksController {
       ...request.body,
       user:new Users(request.user.userId),
     }
-    //채팅방 생성
-    //채팅방 생성 코드
     
     await this.walksService.createWalkBoard(createWalkDto);
 
@@ -68,10 +69,9 @@ export class WalksController {
   @ApiOperation({ summary: '산책 게시물 수정 API', description: '산책 게시물을 수정한다.' })
   @ApiResponse({status:200, description: '산책 게시물을 수정한다.',type:Result})
   @UseGuards(JwtAuthGuard)
-  @Patch(':targetWalkId')
-  async editWalkBoard(@Param('targetWalkId') targetWalkId: string,@Body() updateWalkDto:UpdateWalkDto,@Req() request,@Res() response:Response) {
+  @Patch(':walkId')
+  async editWalkBoard(@Param('walkId') walkId: number,@Body() updateWalkDto:UpdateWalkDto,@Req() request,@Res() response:Response) {
     const userId=request.user.userId
-    const walkId:number=Number(targetWalkId);
     await this.walksService.update(walkId,userId,updateWalkDto);
     return response.status(200).send({
       result:true
@@ -83,10 +83,9 @@ export class WalksController {
   @ApiOperation({ summary: '산책 게시물 삭제 API', description: '산책 게시물을 삭제한다.' })
   @ApiResponse({status:200, description: '산책 게시물을 삭제한다',type:Result})
   @UseGuards(JwtAuthGuard)
-  @Delete(':targetWalkId')
-  async deleteWalkBoard(@Param('targetWalkId') targetWalkId: string,@Req() request,@Res() response:Response) {
+  @Delete(':walkId')
+  async deleteWalkBoard(@Param('walkId') walkId: number,@Req() request,@Res() response:Response) {
     const userId=request.user.userId
-    const walkId:number=Number(targetWalkId);
     await this.walksService.boardRemove(walkId,userId)
     return response.status(200).send({
       result:true

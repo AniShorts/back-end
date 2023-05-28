@@ -27,6 +27,7 @@ export class WalksService {
   //게시판 작성
   async createWalkBoard(createWalkDto: CreateWalkDto) {
     const chattingDto:CreateChattingDto={
+      owner:createWalkDto.user.userId,
       curNum:1,
       maxNum:createWalkDto.maxNum
     }
@@ -41,15 +42,15 @@ export class WalksService {
   }
 
   //게시판 목록 (pagnation적용)
-  async boardfindAll(pageNum:number,pageSize:number) {
+  async boardfindAll(pageNum:number) {
+    const pageSize:number=Number(process.env.WALK_PAGESIZE)
     if(pageNum<=0){
       //에러 코드 수정
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     const boardCount=await this.walkRepository.count();
     
-    const pageLimit:number=boardCount%pageSize===0?boardCount/pageSize:boardCount/pageSize+1
-
+    const pageLimit:number=Math.floor(boardCount%pageSize===0?boardCount/pageSize:boardCount/pageSize+1);
     if(pageNum>pageLimit){
       pageNum=pageLimit
     }
@@ -90,10 +91,10 @@ export class WalksService {
   }
 
   
-  async findOneByWalkId(targetWalkId: number) {
+  async findOneByWalkId(walkId: number) {
     const walkInfo=await this.walkRepository.findOne({
       where:{
-        walkId:targetWalkId
+        walkId:walkId
       },
       relations:{
         user:true,
@@ -101,7 +102,7 @@ export class WalksService {
       },
       select:{
         user:{
-          userId:true,
+          nickname:true,
         },
         chat:{
           chatId:true
@@ -125,13 +126,13 @@ export class WalksService {
     return await this.walkRepository.update({walkId},{...updateWalkDto})
   }
 
-  async boardRemove(targetWalkId: number,userId:number) {
-    const walkInfo=await this.findOneByWalkId(targetWalkId)
+  async boardRemove(walkId: number,userId:number) {
+    const walkInfo=await this.findOneByWalkId(walkId)
     if(walkInfo.user.userId!==userId){
       //에러코드 수정 필요
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     
-    return await this.walkRepository.delete({walkId:targetWalkId})
+    return await this.walkRepository.delete({walkId:walkId})
   }
 }
