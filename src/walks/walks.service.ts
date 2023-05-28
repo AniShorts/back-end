@@ -37,7 +37,7 @@ export class WalksService {
       date:new Date(),
       chat:new Chatting(chatId)
     }
-    await this.walkRepository.save({...createWalkDto})
+    await this.walkRepository.save({...createWalkDto},{transaction:true})
   }
 
   //게시판 목록 (pagnation적용)
