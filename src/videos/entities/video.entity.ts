@@ -63,4 +63,8 @@ export class Video extends BaseEntity {
   @ApiProperty()
   @Column('json')
   category: { id: number; name: string };
+
+  @ApiProperty()
+  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
+  categoryVideos: Categoryvideo[];
 }
