@@ -56,7 +56,7 @@ export class Walk {
         comment: 'location that user write',
       })
     @ApiProperty()
-    date:Date;
+    createAt:Date;
     
 
     @ApiProperty()

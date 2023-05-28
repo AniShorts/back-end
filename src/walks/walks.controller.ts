@@ -23,7 +23,7 @@ export class WalksController {
     const boardInfo=await this.walksService.boardfindAll(pageNum);
     //return: {list, pageNum, pageList}
     return response.status(200).send({
-      list:boardInfo.list,
+      walks:boardInfo.list[0],
       pageNum:pageNum,
       pageList:boardInfo.pageList
     })

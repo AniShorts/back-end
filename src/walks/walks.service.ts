@@ -80,9 +80,24 @@ export class WalksService {
       order:{
         walkId:'DESC'
       },
+      relations:{
+        user:true,
+      },
+      select:{
+        walkId:true,
+        user:{
+          userId:true
+        },
+        createAt:true
+      },
       skip:pageSize*(pageNum-1),
       take:pageSize
     });
+    for(let ele of list[0]){
+      ele["userId"]=ele.user.userId;
+      delete ele.user
+    }
+    
     return {
       list,
       pageList
