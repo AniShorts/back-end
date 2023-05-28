@@ -94,6 +94,18 @@ export class WalksService {
     const walkInfo=await this.walkRepository.findOne({
       where:{
         walkId:targetWalkId
+      },
+      relations:{
+        user:true,
+        chat:true,
+      },
+      select:{
+        user:{
+          userId:true,
+        },
+        chat:{
+          chatId:true
+        }
       }
     })
     if(walkInfo===null){
@@ -115,7 +127,7 @@ export class WalksService {
 
   async boardRemove(targetWalkId: number,userId:number) {
     const walkInfo=await this.findOneByWalkId(targetWalkId)
-    if(walkInfo.userId!==userId){
+    if(walkInfo.user.userId!==userId){
       //에러코드 수정 필요
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
