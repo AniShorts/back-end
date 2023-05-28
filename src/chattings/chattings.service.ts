@@ -21,7 +21,8 @@ export class ChattingsService {
 
 
   async create(createChattingDto: CreateChattingDto) {
-    return await this.chattingRepository.save({...createChattingDto})
+    await this.chattingRepository.save({...createChattingDto})
+    return 1;
   }
 
   async verify(token: string):Promise<Users>{

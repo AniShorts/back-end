@@ -4,6 +4,7 @@ import { WalkcommentsController } from './walkcomments.controller';
 import { Walkcomment } from './entities/walkcomment.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
+import { WalksService } from 'src/walks/walks.service';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { UsersModule } from 'src/users/users.module';
     TypeOrmModule.forFeature([Walkcomment])
   ],
   controllers: [WalkcommentsController],
-  providers: [WalkcommentsService]
+  providers: [WalkcommentsService],
+  exports:[WalkcommentsService]
 })
 export class WalkcommentsModule {}

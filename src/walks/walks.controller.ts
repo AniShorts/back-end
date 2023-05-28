@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common/decorators';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { WalkBoardList,WalkBoardGet, WalkInput, Result, WalkUpdate } from './walkAnyType';
+import { Users } from 'src/users/entities/user.entity';
 //게시판 번호 크기
 const walkPageSize:number=Number(process.env.WALK_PAGESIZE);
 
@@ -46,12 +47,13 @@ export class WalksController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async writeWalkBoard(@Req() request,@Res() response:Response) {
-    const createWalkDto:CreateWalkDto=request.body;
-    createWalkDto.userId=request.user.userId;
     
+    const createWalkDto:CreateWalkDto={
+      ...request.body,
+      user:new Users(request.user.userId),
+    }
     //채팅방 생성
     //채팅방 생성 코드
-    createWalkDto.chatId=1//임시코드
     
     await this.walksService.createWalkBoard(createWalkDto);
 
