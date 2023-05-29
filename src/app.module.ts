@@ -69,7 +69,7 @@ const ENV = process.env;
     AuthModule,
     CategoryModule,
     CategorylistModule,
-    CategoryvideoModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

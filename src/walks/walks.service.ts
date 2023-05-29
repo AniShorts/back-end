@@ -5,10 +5,17 @@ import { Repository } from 'typeorm';
 import { CreateWalkDto } from './dto/create-walk.dto';
 import { UpdateWalkDto } from './dto/update-walk.dto';
 import { Walk } from './entities/walk.entity';
+import { UsersService } from 'src/users/users.service';
+import { ChattingsService } from 'src/chattings/chattings.service';
+import { Chatting } from 'src/chattings/entities/chatting.entity';
+import { CreateChattingDto } from 'src/chattings/dto/create-chatting.dto';
 
 @Injectable()
 export class WalksService {
-  constructor(@InjectRepository(Walk) private walkRepository: Repository<Walk>,) {
+  constructor(
+    @InjectRepository(Walk) private walkRepository: Repository<Walk>,
+    private readonly usersService:UsersService,
+    private readonly chatttingService:ChattingsService) {
     this.walkRepository = walkRepository;
   }
 
@@ -19,21 +26,31 @@ export class WalksService {
   
   //게시판 작성
   async createWalkBoard(createWalkDto: CreateWalkDto) {
-    createWalkDto.curNum=1;
-    createWalkDto.date=new Date();
-    await this.walkRepository.save({...createWalkDto})
+    const chattingDto:CreateChattingDto={
+      owner:createWalkDto.user.userId,
+      curNum:1,
+      maxNum:createWalkDto.maxNum
+    }
+    const chatId=await this.chatttingService.create(chattingDto);
+    createWalkDto={
+      ...createWalkDto,
+      curNum:1,
+      date:new Date(),
+      chat:new Chatting(chatId)
+    }
+    await this.walkRepository.save({...createWalkDto},{transaction:true})
   }
 
   //게시판 목록 (pagnation적용)
-  async boardfindAll(pageNum:number,pageSize:number) {
+  async boardfindAll(pageNum:number) {
+    const pageSize:number=Number(process.env.WALK_PAGESIZE)
     if(pageNum<=0){
       //에러 코드 수정
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     const boardCount=await this.walkRepository.count();
     
-    const pageLimit:number=boardCount%pageSize===0?boardCount/pageSize:boardCount/pageSize+1
-
+    const pageLimit:number=Math.floor(boardCount%pageSize===0?boardCount/pageSize:boardCount/pageSize+1);
     if(pageNum>pageLimit){
       pageNum=pageLimit
     }
@@ -63,9 +80,24 @@ export class WalksService {
       order:{
         walkId:'DESC'
       },
+      relations:{
+        user:true,
+      },
+      select:{
+        walkId:true,
+        user:{
+          userId:true
+        },
+        createAt:true
+      },
       skip:pageSize*(pageNum-1),
       take:pageSize
     });
+    for(let ele of list[0]){
+      ele["userId"]=ele.user.userId;
+      delete ele.user
+    }
+    
     return {
       list,
       pageList
@@ -74,10 +106,22 @@ export class WalksService {
   }
 
   
-  async findOneByWalkId(targetWalkId: number) {
+  async findOneByWalkId(walkId: number) {
     const walkInfo=await this.walkRepository.findOne({
       where:{
-        walkId:targetWalkId
+        walkId:walkId
+      },
+      relations:{
+        user:true,
+        chat:true,
+      },
+      select:{
+        user:{
+          nickname:true,
+        },
+        chat:{
+          chatId:true
+        }
       }
     })
     if(walkInfo===null){
@@ -89,7 +133,7 @@ export class WalksService {
 
   async update(walkId: number,userId:number, updateWalkDto: UpdateWalkDto) {
     const walkInfo=await this.findOneByWalkId(walkId)
-    if(walkInfo.userId!==userId){
+    if(walkInfo.user.userId!==userId){
       //에러코드 수정 필요
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
@@ -97,13 +141,13 @@ export class WalksService {
     return await this.walkRepository.update({walkId},{...updateWalkDto})
   }
 
-  async boardRemove(targetWalkId: number,userId:number) {
-    const walkInfo=await this.findOneByWalkId(targetWalkId)
-    if(walkInfo.userId!==userId){
+  async boardRemove(walkId: number,userId:number) {
+    const walkInfo=await this.findOneByWalkId(walkId)
+    if(walkInfo.user.userId!==userId){
       //에러코드 수정 필요
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     
-    return await this.walkRepository.delete({walkId:targetWalkId})
+    return await this.walkRepository.delete({walkId:walkId})
   }
 }
