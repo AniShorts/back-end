@@ -22,6 +22,7 @@ export class ChattingsService {
 
   async create(createChattingDto: CreateChattingDto) {
     const chatInfo:Chatting=await this.chattingRepository.save({...createChattingDto},{transaction:true,reload:true})
+    
     return chatInfo.chatId;
   }
 
@@ -30,19 +31,11 @@ export class ChattingsService {
     return userInfo;
   }
 
-  async findAll() {
-    return await this.chattingRepository.find({
-      where:{
-        
-      }
-   })
-  }
-
-  async myRoomFindAll(user:number){
-    return await this.chattingRepository.find({
-      where:{
-        owner:user
-      }
+  async myRoomFindAll(userId:number){
+    return await this.chattingRepository.find(  {
+      where:[
+        {owner:userId},
+      ]
    })
   }
 
@@ -53,9 +46,18 @@ export class ChattingsService {
       }
     })
   }
-  update(chatId: number, updateChattingDto: UpdateChattingDto) {
-    return `This action updates a #${chatId} chatting`;
+
+  async joinUser(chatId:number,userId:number){
+    const roomInfo=await this.findOne(chatId);
+    roomInfo.users.push(userId)
+    return await this.chattingRepository.update(
+      {chatId},
+      {
+        users:roomInfo.users
+      }
+    )
   }
+
 
   async remove(chatId: number) {
     return await this.chattingRepository.delete({chatId})

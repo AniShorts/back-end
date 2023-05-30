@@ -32,7 +32,7 @@ export class Chatting {
         type: 'json',
         comment: 'chatting room in userIds',
     })
-    users: Object[];
+    users: Number[];
 
     @Column({
         type: 'int',

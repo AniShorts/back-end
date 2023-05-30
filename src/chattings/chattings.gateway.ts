@@ -19,11 +19,6 @@ export class ChattingsGateway {
   @WebSocketServer()
   server:Server;
 
-  @SubscribeMessage('createChatting')
-  create(@MessageBody() createChattingDto: CreateChattingDto) {
-    return this.chattingsService.create(createChattingDto);
-  }
-
   //연결시 발생하는 이벤트
   handleConnection(@ConnectedSocket() client: Socket) {
     client.emit('ServerToClient', 'Connect')
@@ -68,7 +63,7 @@ export class ChattingsGateway {
   //emit 데이터 전송 받는 역할할 수 있다.
   //@ConnectedSocket() 데코레이터가 없을 경우 socket 변수가 제대로 작동되지 않음 주의
   @SubscribeMessage('chatToRoom')
-  handleMessage(@ConnectedSocket() socket:Socket,@MessageBody() data) {
+  async handleMessage(@ConnectedSocket() socket:Socket,@MessageBody() data) {
     console.log(data)
     const {room}=data;
     const {text}=data;
@@ -82,6 +77,7 @@ export class ChattingsGateway {
     const {user}=data;
     const {room}=data;
     const {target}=data;
+    // await this.chattingsService.removeMember()
     let roomInfo=await this.chattingsService.findOne(room);
 
     //방 주인 확인
@@ -101,8 +97,8 @@ export class ChattingsGateway {
   @SubscribeMessage('myRoomLIst')
   async handleRoomList(@MessageBody() data){
     console.log(data)
-    const {user}=data;
-    const roomAllList=await this.chattingsService.myRoomFindAll(user);
+    const {userId}=data;
+    const roomAllList=await this.chattingsService.myRoomFindAll(userId);
 
     //메시지 보내기 구현
 
