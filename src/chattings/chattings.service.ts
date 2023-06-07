@@ -1,4 +1,4 @@
-import { Injectable, } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, } from '@nestjs/common';
 import { CreateChattingDto } from './dto/create-chatting.dto';
 import { UpdateChattingDto } from './dto/update-chatting.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { Users } from 'src/users/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
+import { elementAt } from 'rxjs';
 
 @Injectable()
 export class ChattingsService {
@@ -49,6 +50,17 @@ export class ChattingsService {
 
   async joinUser(chatId:number,userId:number){
     const roomInfo=await this.findOne(chatId);
+    if(roomInfo.maxNum<=roomInfo.curNum){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    const exist=await roomInfo.users.findIndex(
+      ele=>{
+        ele==userId
+      }
+    )
+    if(exist!==-1){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
     roomInfo.users.push(userId)
     return await this.chattingRepository.update(
       {chatId},
@@ -56,6 +68,18 @@ export class ChattingsService {
         users:roomInfo.users
       }
     )
+  }
+
+  async checkUser(chatId:number,userId:number):Promise<void>{
+    const roomInfo=await this.findOne(chatId);
+    const exist=await roomInfo.users.findIndex(
+      ele=>{
+        ele===userId
+      }
+    )
+    if(exist!==-1){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
   }
 
 

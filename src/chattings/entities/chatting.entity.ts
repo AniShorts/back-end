@@ -24,6 +24,12 @@ export class Chatting {
 
     @Column({
         type:'varchar',
+        comment:'room name'
+    })
+    roomName:string;
+
+    @Column({
+        type:'varchar',
         comment:'make room'
     })
     owner:number;
