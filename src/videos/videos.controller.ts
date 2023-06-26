@@ -74,8 +74,9 @@ export class VideosController {
   @Delete(':id')
   async deleteVideo(@Req() request, @Param('id') videoId: number) {
     const { userId } = request.user;
+    console.log(userId);
     const video = await this.videosService.findOneVideo(videoId);
-    if (userId !== video.videoId) {
+    if (userId !== video.userId) {
       throw new HttpException(
         'Not same user created video',
         HttpStatus.FORBIDDEN,
