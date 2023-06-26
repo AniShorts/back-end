@@ -84,7 +84,7 @@ export class VideosService {
   //검색 - category으로 검색
   async searchByCate(keyword: SearchVideoDto) {
     const searchedVideosByCategory = await this.videosRepository.find({
-      where: { category: Like(`%${keyword.keyword}%`) },
+      where: { categoryVideos: Like(`%${keyword.keyword}%`) },
     });
     console.log('searchedVideosByCategory', searchedVideosByCategory);
     /*   

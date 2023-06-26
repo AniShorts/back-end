@@ -25,6 +25,7 @@ import { Categorylist } from './categorylist/entities/categorylist.entity';
 import { Chatting } from './chattings/entities/chatting.entity';
 import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
+import { Videolike } from './videolikes/entities/videolike.entity';
 const ENV = process.env;
 
 @Module({
@@ -50,6 +51,7 @@ const ENV = process.env;
         Video,
         Chatting,
         Categoryvideo,
+        Videolike,
       ],
 
       synchronize: true,
@@ -68,6 +70,7 @@ const ENV = process.env;
     CategoryModule,
     CategorylistModule,
     CategoryvideoModule,
+    VideolikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
