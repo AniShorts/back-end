@@ -51,6 +51,7 @@ const ENV = process.env;
         Video,
         Chatting,
         Categoryvideo,
+        Videolike,
       ],
 
       synchronize: true,
@@ -69,6 +70,7 @@ const ENV = process.env;
     CategoryModule,
     CategorylistModule,
     CategoryvideoModule,
+    VideolikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
