@@ -17,7 +17,24 @@ import { Video } from 'src/videos/entities/video.entity';
   },
 })
 export class Videolike extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  videoLikeId: number;
+
   @ApiProperty()
+  @ManyToOne((type) => Video, { nullable: false })
+  @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
+  videoId: number;
+
+  @ApiProperty()
+  @ManyToOne(() => Users, (users) => users.userId)
+  userId: number;
+  @Column({
+    type: 'int',
+    comment: 'user`s unique number',
+  })
+  @Column()
+  likeStatus: boolean;
+  /*   @ApiProperty()
   @PrimaryGeneratedColumn()
   videoLikeId: number;
 
@@ -37,5 +54,5 @@ export class Videolike extends BaseEntity {
   videoId: number;
 
   @Column()
-  likeStatus: boolean;
+  likeStatus: boolean; */
 }
