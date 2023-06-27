@@ -1,1 +1,4 @@
-export class CreateVideolikeDto {}
+export class CreateVideolikeDto {
+  userId: number;
+  likeStatus: boolean;
+}
