@@ -24,6 +24,12 @@ export class Chatting {
 
     @Column({
         type:'varchar',
+        comment:'room name'
+    })
+    roomName:string;
+
+    @Column({
+        type:'varchar',
         comment:'make room'
     })
     owner:number;
@@ -32,7 +38,7 @@ export class Chatting {
         type: 'json',
         comment: 'chatting room in userIds',
     })
-    users: Object[];
+    users: Number[];
 
     @Column({
         type: 'int',
