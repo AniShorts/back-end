@@ -14,6 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
     TypeOrmModule.forFeature([Chatting])
   ],
-  providers: [ChattingsGateway, ChattingsService, JwtService,]
+  providers: [ChattingsGateway, ChattingsService, JwtService,],
+  exports:[ChattingsService]
 })
 export class ChattingsModule {}

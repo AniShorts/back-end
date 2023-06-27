@@ -27,7 +27,6 @@ export class Video extends BaseEntity {
   videoId: number;
 
   @ApiProperty()
-  @ManyToOne(() => Users, (users) => users.userId)
   @Column({
     type: 'int',
     comment: 'user`s unique number',
@@ -35,38 +34,46 @@ export class Video extends BaseEntity {
   userId: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The number of videolike',
+  })
   likeNum: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'varchar',
+    comment: 'video_name',
+  })
   videoName: string;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'varchar',
+    comment: 'The destination of a video image',
+  })
   videoImg: string;
-
-  @ApiProperty()
-  @Column()
-  videoDest: string;
 
   @ApiProperty()
   @CreateDateColumn()
   createdAt: Timestamp;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The views of a video',
+  })
   views: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The number of comments',
+  })
   commentNum: number;
 
   @ApiProperty()
   @Column('json')
   category: { id: number; name: string };
-
-  @ApiProperty()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
   categoryVideos: Categoryvideo[];
 }
