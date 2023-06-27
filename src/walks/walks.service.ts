@@ -148,6 +148,10 @@ export class WalksService {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     
-    return await this.walkRepository.delete({walkId:walkId})
+    const result=await this.walkRepository.delete({walkId:walkId})
+    if(result !==null){
+      await this.chatttingService.remove(walkInfo.chat.chatId);
+    }
+    return result
   }
 }
