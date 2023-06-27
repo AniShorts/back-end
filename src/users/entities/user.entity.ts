@@ -66,6 +66,6 @@ export class Users {
       type: 'varchar',
       comment: 'refresh_token',
     })
-    refresh:string;
+  refresh:string;
 
 }

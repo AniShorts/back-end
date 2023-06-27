@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,HttpException, UsePipes,} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,HttpException, UsePipes, Query,} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -202,7 +202,24 @@ export class UsersController {
     const user = req.user;
     return user;
   }
-  
+
+  //SNS로그인(카카오톡) - 토큰 발급
+  //swagger 데코레이터
+  //body의 class type
+  @ApiBody({type:LoginInputType})
+  //swagger api 코멘트
+  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200.1, description: '로그인 실패.' })
+  //http 유형 및 주소
+  @Post('kakao')
+  async kakaoLogin(@Query('code') code: string) {
+    //guard의 결과가 req.user에 있어 변수화
+    return this.usersService.kakaoLogin(code);
+  }
+
   /**
    * 비밀번호 찾기가 불가능해지면서 변경부분에 변화가 필요하다.
    * 로그인 전에도 사용가능한 메소드로 변경해야한다.
