@@ -1,4 +1,4 @@
-import { Injectable, } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, } from '@nestjs/common';
 import { CreateChattingDto } from './dto/create-chatting.dto';
 import { UpdateChattingDto } from './dto/update-chatting.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { Users } from 'src/users/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
+import { elementAt } from 'rxjs';
 
 @Injectable()
 export class ChattingsService {
@@ -21,7 +22,9 @@ export class ChattingsService {
 
 
   async create(createChattingDto: CreateChattingDto) {
-    return await this.chattingRepository.save({...createChattingDto})
+    const chatInfo:Chatting=await this.chattingRepository.save({...createChattingDto},{transaction:true,reload:true})
+    
+    return chatInfo.chatId;
   }
 
   async verify(token: string):Promise<Users>{
@@ -29,19 +32,11 @@ export class ChattingsService {
     return userInfo;
   }
 
-  async findAll() {
-    return await this.chattingRepository.find({
-      where:{
-        
-      }
-   })
-  }
-
-  async myRoomFindAll(user:number){
-    return await this.chattingRepository.find({
-      where:{
-        owner:user
-      }
+  async myRoomFindAll(userId:number){
+    return await this.chattingRepository.find(  {
+      where:[
+        {owner:userId},
+      ]
    })
   }
 
@@ -52,9 +47,41 @@ export class ChattingsService {
       }
     })
   }
-  update(chatId: number, updateChattingDto: UpdateChattingDto) {
-    return `This action updates a #${chatId} chatting`;
+
+  async joinUser(chatId:number,userId:number){
+    const roomInfo=await this.findOne(chatId);
+    if(roomInfo.maxNum<=roomInfo.curNum){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    const exist=await roomInfo.users.findIndex(
+      ele=>{
+        ele==userId
+      }
+    )
+    if(exist!==-1){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    roomInfo.users.push(userId)
+    return await this.chattingRepository.update(
+      {chatId},
+      {
+        users:roomInfo.users
+      }
+    )
   }
+
+  async checkUser(chatId:number,userId:number):Promise<void>{
+    const roomInfo=await this.findOne(chatId);
+    const exist=await roomInfo.users.findIndex(
+      ele=>{
+        ele===userId
+      }
+    )
+    if(exist!==-1){
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+  }
+
 
   async remove(chatId: number) {
     return await this.chattingRepository.delete({chatId})
