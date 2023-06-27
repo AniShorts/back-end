@@ -124,4 +124,7 @@ export class ChattingsGateway {
     //메시지 보내기 구현
     client.emit('roomInfo',roomAllList)
   }
+  //산책-나가기
+  //산책-채팅방 이름 바꾸기
+
 }
