@@ -51,8 +51,8 @@ const ENV = process.env;
         Categorylist,
         Video,
         Chatting,
-        Categoryvideo,
-        Videolike,
+        // Categoryvideo,
+        // Videolike,
         Walkcomment,
       ],
 
