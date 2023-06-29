@@ -12,6 +12,7 @@ import {
 import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
+import { Category } from 'src/category/entities/category.entity';
 import { Videolike } from 'src/videolikes/entities/videolike.entity';
 
 @Entity({
@@ -22,8 +23,9 @@ import { Videolike } from 'src/videolikes/entities/videolike.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany((type) => Categoryvideo, (categoryvideo) => categoryvideo.video)
-  @OneToMany((type) => Videolike, (videolike) => videolike.video)
+  @ManyToOne(() => Users, (users) => users.userId)
+  @OneToMany(() => Videolike, (videolikes) => videolikes.videolikeId)
+  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   videoId: number;
 
   @ApiProperty()
