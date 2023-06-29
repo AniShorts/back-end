@@ -76,8 +76,6 @@ export class VideosService {
     const searchedVideosByName = await this.videosRepository.find({
       where: { videoName: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByName', searchedVideosByName);
-
     return searchedVideosByName;
   }
 
@@ -87,7 +85,6 @@ export class VideosService {
     const searchedVideosByCategory = await this.videosRepository.find({
       where: { category: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByCategory', searchedVideosByCategory);
     return searchedVideosByCategory;
   }
 }
