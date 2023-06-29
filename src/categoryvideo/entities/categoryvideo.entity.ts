@@ -22,13 +22,9 @@ import { Video } from 'src/videos/entities/video.entity';
 export class Categoryvideo extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
-  @PrimaryColumn()
-  id: number;
+  categoryId: number;
 
   @ManyToOne((type) => Video, { nullable: false })
   @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
   video: Video;
-
-  @Column({ type: 'int', comment: 'video id' })
-  categoryId: number;
 }
