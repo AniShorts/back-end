@@ -26,6 +26,7 @@ import { Chatting } from './chattings/entities/chatting.entity';
 import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
 import { Videolike } from './videolikes/entities/videolike.entity';
+import { Walkcomment } from './walkcomments/entities/walkcomment.entity';
 const ENV = process.env;
 
 @Module({
@@ -52,6 +53,7 @@ const ENV = process.env;
         Chatting,
         Categoryvideo,
         Videolike,
+        Walkcomment,
       ],
 
       synchronize: true,
