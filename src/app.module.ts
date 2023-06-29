@@ -17,7 +17,6 @@ import { Users } from './users/entities/user.entity';
 import { Video } from './videos/entities/video.entity';
 import { Walk } from './walks/entities/walk.entity';
 import { AuthModule } from './auth/auth.module';
-import { Videolike } from './videolikes/entities/videolike.entity';
 import { CategoryController } from './category/category.controller';
 import { CategoryModule } from './category/category.module';
 import { CategorylistModule } from './categorylist/categorylist.module';
@@ -26,6 +25,8 @@ import { Categorylist } from './categorylist/entities/categorylist.entity';
 import { Chatting } from './chattings/entities/chatting.entity';
 import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
+import { Videolike } from './videolikes/entities/videolike.entity';
+import { Walkcomment } from './walkcomments/entities/walkcomment.entity';
 const ENV = process.env;
 
 @Module({
@@ -52,6 +53,7 @@ const ENV = process.env;
         Chatting,
         Categoryvideo,
         Videolike,
+        Walkcomment,
       ],
 
       synchronize: true,

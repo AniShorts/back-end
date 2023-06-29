@@ -15,10 +15,12 @@ export class RefreshStrategy extends PassportStrategy(Strategy,'refresh') {
 
   async validate(refresh:string): Promise<any>  {
     try {
-        const userId=(await this.jwt.verify(refresh,{secret:this.config.get('JWT_REFRESH_TOKEN_SECRET')})).userId
+        const info=await this.jwt.verify(refresh,{secret:this.config.get('JWT_REFRESH_TOKEN_SECRET')})
+        const userId=info.userId
         if(!userId){
           throw new Error('Expired Refresh');
         }
+        console.log(info)
         const auth = await this.authService.validateRefresh(refresh,userId);
         if (!auth) {
           throw new Error('Invalid Access/Refresh Token');

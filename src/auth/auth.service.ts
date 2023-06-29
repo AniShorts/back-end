@@ -46,7 +46,7 @@ export class AuthService {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: `${this.configService.get(
         'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}d`,
+      )}`+`d`,
     })
   }
   async saveRefreshToken(token:string,userId:number){
@@ -58,6 +58,9 @@ export class AuthService {
 
   async getRefreshToken(access:string, refresh:string): Promise<String>{
     const user=await this.usersService.findOneByToken(access,refresh)
+    if(user===null){
+      throw new Error('Invalid Access/Refresh Token');
+    }
     return await this.createRefreshToken({userId:user.userId})
   }
 

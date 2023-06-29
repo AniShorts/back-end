@@ -17,7 +17,6 @@ export class UsersService {
   2. 비밀번호를 암호화하여 DB에 저장한다.
    */
   async createUser(createUserDto: CreateUserDto):Promise<Object> {
-    delete createUserDto.userId;
     let nickname_check=await this.findOneByNickname(createUserDto.nickname)
     if(nickname_check!==null){
       throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
@@ -65,7 +64,7 @@ export class UsersService {
   //     category:category
   //   })
   // }
-
+ 
   //비밀번호 업데이트
   async updatePassword(userId: number,password:string) {
     const hashedPassword = await hash(password, 10);

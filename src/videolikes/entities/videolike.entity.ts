@@ -4,10 +4,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   Entity,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
-
-import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Users } from 'src/users/entities/user.entity';
 import { Video } from 'src/videos/entities/video.entity';
 
 @Entity({
@@ -29,7 +30,9 @@ export class Videolike extends BaseEntity {
   })
   userId: number;
 
-  @ApiProperty()
   @Column()
   videoId: number;
+
+  @Column()
+  likeStatus: boolean;
 }
