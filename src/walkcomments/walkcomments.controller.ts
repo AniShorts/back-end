@@ -22,16 +22,20 @@ export class WalkcommentsController {
   constructor(private readonly walkcommentsService: WalkcommentsService) {}
 
   @UseGuards(JwtAuthGuard)
-  /*   @Post("/:walkId")
-  async create(@Req() req:Request, @Param("walkId") walkId:number, @Body() body:{walkComment:string}) {
-    const {userId}=req.user
-    const insertDto:CreateWalkcommentDto={
+  @Post('/:walkId')
+  async create(
+    @Req() req,
+    @Param('walkId') walkId: number,
+    @Body() body: { walkComment: string },
+  ) {
+    const { userId } = req.user;
+    const insertDto: CreateWalkcommentDto = {
       ...body,
-      user:new Users(userId),
-      walk:new Walk(walkId)
-    }
+      user: new Users(userId),
+      walk: new Walk(walkId),
+    };
     return await this.walkcommentsService.create(insertDto);
-  } */
+  }
   @Get('/:walkId/:pageNum')
   async pageWalkComment(
     @Param('pageNum') pageNum: number,
