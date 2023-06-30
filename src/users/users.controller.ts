@@ -203,6 +203,22 @@ export class UsersController {
     return user;
   }
 
+  //SNS로그인(전송)
+  //swagger 데코레이터
+  //body의 class type
+  @ApiBody({type:LoginInputType})
+  //swagger api 코멘트
+  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200.1, description: '로그인 실패.' })
+  //http 유형 및 주소
+  @Get('kakao')
+  async kakaoConnect() {
+    await this.usersService.kakaoConnect();
+  }
+
   //SNS로그인(카카오톡) - 토큰 발급
   //swagger 데코레이터
   //body의 class type
