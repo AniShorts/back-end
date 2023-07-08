@@ -14,7 +14,7 @@ export class WalkcommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post("/:walkId")
-  async create(@Req() req:Request, @Param("walkId") walkId:string, @Body() body:{walkComment:string}) {
+  async create(@Req() req:any, @Param("walkId") walkId:string, @Body() body:{walkComment:string}) {
     const {userId}=req.user
     const id:number=Number(walkId)
     const insertDto:CreateWalkcommentDto={
@@ -33,14 +33,14 @@ export class WalkcommentsController {
   
   @UseGuards(JwtAuthGuard)  
   @Patch("/:walkCommentId")
-  async editComment(@Req() req:Request,@Param("walkCommentId") walkCommentId:string,@Body() updateWalkcommentDto:UpdateWalkcommentDto){
+  async editComment(@Req() req:any,@Param("walkCommentId") walkCommentId:string,@Body() updateWalkcommentDto:UpdateWalkcommentDto){
     const result:Boolean=await this.walkcommentsService.updateByWalkCommentId(Number(walkCommentId),updateWalkcommentDto)
     return result
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete("/:walkCommentId")
-  async deleteComment(@Req() req:Request,@Param("walkCommentId") walkCommentId:string){
+  async deleteComment(@Req() req:any,@Param("walkCommentId") walkCommentId:string){
     const result:Boolean=await this.walkcommentsService.removeByWalkCommentId(Number(walkCommentId));
     return result
   }
