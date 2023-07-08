@@ -23,7 +23,7 @@ export class WalkcommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post("/:walkId")
-  async create(@Req() req:any, @Param("walkId") walkId:string, @Body() body:{walkComment:string}) {
+  async create(@Req() req:any, @Param("walkId") walkId:number, @Body() body:{walkComment:string}) {
     const {userId}=req.user
     const insertDto:CreateWalkcommentDto={
       ...body,
@@ -31,7 +31,8 @@ export class WalkcommentsController {
       walk:new Walk(walkId)
     }
     return await this.walkcommentsService.create(insertDto);
-  } */
+  } 
+  
   @Get('/:walkId/:pageNum')
   async pageWalkComment(
     @Param('pageNum') pageNum: number,
@@ -42,12 +43,6 @@ export class WalkcommentsController {
       walkId,
     );
     return { list };
-  }
-
-  @Get("/:walkId/:pageNum")
-  async pageWalkComment(@Param("pageNum") pageNum:string,@Param("walkId")  walkId:string){
-    const list= await this.walkcommentsService.findAllByWalkId(Number(pageNum),Number(process.env.WALKCOMMENT_PAGESIZE),Number(walkId))
-    return {list}
   }
   
   @UseGuards(JwtAuthGuard)  
