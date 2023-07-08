@@ -25,6 +25,7 @@ import { Categorylist } from './categorylist/entities/categorylist.entity';
 import { Chatting } from './chattings/entities/chatting.entity';
 import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
+import { Videolike } from './videolikes/entities/videolike.entity';
 import { Walkcomment } from './walkcomments/entities/walkcomment.entity';
 const ENV = process.env;
 
@@ -48,9 +49,10 @@ const ENV = process.env;
         Walk,
         Category,
         Categorylist,
-        // Video,
+        Video,
         Chatting,
-        // Categoryvideo,
+        Categoryvideo,
+        Videolike,
         Walkcomment,
       ],
 
@@ -70,6 +72,7 @@ const ENV = process.env;
     CategoryModule,
     CategorylistModule,
     CategoryvideoModule,
+    VideolikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

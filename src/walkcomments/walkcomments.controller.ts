@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { WalkcommentsService } from './walkcomments.service';
 import { CreateWalkcommentDto } from './dto/create-walkcomment.dto';
 import { UpdateWalkcommentDto } from './dto/update-walkcomment.dto';
@@ -6,7 +16,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { Users } from 'src/users/entities/user.entity';
 import { Walk } from 'src/walks/entities/walk.entity';
-
 
 @Controller('walkcomments')
 export class WalkcommentsController {
@@ -16,13 +25,23 @@ export class WalkcommentsController {
   @Post("/:walkId")
   async create(@Req() req:any, @Param("walkId") walkId:string, @Body() body:{walkComment:string}) {
     const {userId}=req.user
-    const id:number=Number(walkId)
     const insertDto:CreateWalkcommentDto={
       ...body,
       user:new Users(userId),
-      walk:new Walk(id)
+      walk:new Walk(walkId)
     }
     return await this.walkcommentsService.create(insertDto);
+  } */
+  @Get('/:walkId/:pageNum')
+  async pageWalkComment(
+    @Param('pageNum') pageNum: number,
+    @Param('walkId') walkId: number,
+  ) {
+    const list = await this.walkcommentsService.findAllByWalkId(
+      pageNum,
+      walkId,
+    );
+    return { list };
   }
 
   @Get("/:walkId/:pageNum")
@@ -43,6 +62,6 @@ export class WalkcommentsController {
   async deleteComment(@Req() req:any,@Param("walkCommentId") walkCommentId:string){
     const result:Boolean=await this.walkcommentsService.removeByWalkCommentId(Number(walkCommentId));
     return result
-  }
 
+  }
 }

@@ -76,26 +76,15 @@ export class VideosService {
     const searchedVideosByName = await this.videosRepository.find({
       where: { videoName: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByName', searchedVideosByName);
-
     return searchedVideosByName;
   }
 
   //검색 - category으로 검색
   async searchByCate(keyword: SearchVideoDto) {
+    console.log(1);
     const searchedVideosByCategory = await this.videosRepository.find({
       where: { category: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByCategory', searchedVideosByCategory);
-    /*   
-      //중복 제거
-      let set = new Set(searchedVideosByName.concat(searchedVideosByCategory));
-      const searchedVideos = [...set];
-      searchedVideos.filter((element, index) => {
-        return searchedVideos.indexOf(element) === index;
-      });
-      console.log('searchedVideos', searchedVideos); */
-
     return searchedVideosByCategory;
   }
 }
