@@ -24,7 +24,7 @@ export class WalkcommentsController {
   @UseGuards(JwtAuthGuard)
   @Post('/:walkId')
   async create(
-    @Req() req,
+    @Req() req: any,
     @Param('walkId') walkId: number,
     @Body() body: { walkComment: string },
   ) {
@@ -36,6 +36,7 @@ export class WalkcommentsController {
     };
     return await this.walkcommentsService.create(insertDto);
   }
+
   @Get('/:walkId/:pageNum')
   async pageWalkComment(
     @Param('pageNum') pageNum: number,
@@ -51,13 +52,13 @@ export class WalkcommentsController {
   @UseGuards(JwtAuthGuard)
   @Patch('/:walkCommentId')
   async editComment(
-    @Req() req: Request,
-    @Param('walkCommentId') walkCommentId: number,
+    @Req() req: any,
+    @Param('walkCommentId') walkCommentId: string,
     @Body() updateWalkcommentDto: UpdateWalkcommentDto,
   ) {
     const result: Boolean =
       await this.walkcommentsService.updateByWalkCommentId(
-        walkCommentId,
+        Number(walkCommentId),
         updateWalkcommentDto,
       );
     return result;
@@ -66,11 +67,13 @@ export class WalkcommentsController {
   @UseGuards(JwtAuthGuard)
   @Delete('/:walkCommentId')
   async deleteComment(
-    @Req() req: Request,
-    @Param('walkCommentId') walkCommentId: number,
+    @Req() req: any,
+    @Param('walkCommentId') walkCommentId: string,
   ) {
     const result: Boolean =
-      await this.walkcommentsService.removeByWalkCommentId(walkCommentId);
+      await this.walkcommentsService.removeByWalkCommentId(
+        Number(walkCommentId),
+      );
     return result;
   }
 }
