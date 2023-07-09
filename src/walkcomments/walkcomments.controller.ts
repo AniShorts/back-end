@@ -22,8 +22,8 @@ export class WalkcommentsController {
   constructor(private readonly walkcommentsService: WalkcommentsService) {}
 
   @UseGuards(JwtAuthGuard)
-  /*   @Post("/:walkId")
-  async create(@Req() req:Request, @Param("walkId") walkId:number, @Body() body:{walkComment:string}) {
+  @Post("/:walkId")
+  async create(@Req() req:any, @Param("walkId") walkId:number, @Body() body:{walkComment:string}) {
     const {userId}=req.user
     const insertDto:CreateWalkcommentDto={
       ...body,
@@ -31,7 +31,8 @@ export class WalkcommentsController {
       walk:new Walk(walkId)
     }
     return await this.walkcommentsService.create(insertDto);
-  } */
+  } 
+  
   @Get('/:walkId/:pageNum')
   async pageWalkComment(
     @Param('pageNum') pageNum: number,
@@ -43,30 +44,19 @@ export class WalkcommentsController {
     );
     return { list };
   }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('/:walkCommentId')
-  async editComment(
-    @Req() req: Request,
-    @Param('walkCommentId') walkCommentId: number,
-    @Body() updateWalkcommentDto: UpdateWalkcommentDto,
-  ) {
-    const result: Boolean =
-      await this.walkcommentsService.updateByWalkCommentId(
-        walkCommentId,
-        updateWalkcommentDto,
-      );
-    return result;
+  
+  @UseGuards(JwtAuthGuard)  
+  @Patch("/:walkCommentId")
+  async editComment(@Req() req:any,@Param("walkCommentId") walkCommentId:string,@Body() updateWalkcommentDto:UpdateWalkcommentDto){
+    const result:Boolean=await this.walkcommentsService.updateByWalkCommentId(Number(walkCommentId),updateWalkcommentDto)
+    return result
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:walkCommentId')
-  async deleteComment(
-    @Req() req: Request,
-    @Param('walkCommentId') walkCommentId: number,
-  ) {
-    const result: Boolean =
-      await this.walkcommentsService.removeByWalkCommentId(walkCommentId);
-    return result;
+  @Delete("/:walkCommentId")
+  async deleteComment(@Req() req:any,@Param("walkCommentId") walkCommentId:string){
+    const result:Boolean=await this.walkcommentsService.removeByWalkCommentId(Number(walkCommentId));
+    return result
+
   }
 }
