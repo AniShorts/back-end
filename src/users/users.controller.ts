@@ -12,6 +12,8 @@ import { resourceLimits } from 'worker_threads';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { SingnupValidationPipe } from './validations/singup.pipe';
+import { ConfigService } from '@nestjs/config';
+import { map } from 'rxjs'
 
 //nestjs 컨트롤 데코레이터-user
 @Controller('users')
@@ -20,7 +22,8 @@ export class UsersController {
   //생성자
   constructor(
     //service와 불러오기
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private configService: ConfigService
     ) {}
 
   //회원가입
@@ -54,7 +57,37 @@ export class UsersController {
       * - {success:true,result:true} 
       */
   }
-  
+
+  //로그인 - 토큰 발급
+  //swagger 데코레이터
+  //body의 class type
+  @ApiBody({type:LoginInputType})
+  //swagger api 코멘트
+  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
+  //swagger api 응답 코멘트 및 type
+  @ApiResponse({status:200.1, description: '로그인 실패.' })
+  //Guards 실행 데코레이터
+  /**
+   * Guards : LocalAuthGuard
+   * - req.nickname : string;
+   * - req.password : string;
+   * return : req.user
+   * - req.user.acceess : string 
+   * -- access token
+   * - req.user.refresh : string
+   * -- refresh token
+   */
+  @UseGuards(LocalAuthGuard)
+  //http 유형 및 주소
+  @Post('login')
+  async login(@Req() req) {
+    //guard의 결과가 req.user에 있어 변수화
+    const user = req.user;
+    return user;
+  }
+
   //가입시 닉네임 중복 확인하는 api
   //swagger 데코레이터
   //body의 class type
@@ -135,105 +168,6 @@ export class UsersController {
     }else{
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
-  }
-
-  //암호화된 비밀번호 찾는것은 불가능하다 그러므로 처단
-  //swagger 수정필요
-  //가드를 사용하여 전화번호 인증 구현(적용 예정)
-  //PW를 찾아주는 API
-  //swagger 데코레이터
-  //body의 class type
-  // @ApiBody({type:NicknameInputType})
-  // //swagger api 코멘트
-  // @ApiOperation({ summary: '비밀번호 찾기 API', description: '비밀번호 찾는다.' })
-  // //swagger api 응답 코멘트 및 type
-  // @ApiResponse({status:200, description: '비밀번호 제공.', type: outputBase })
-  // //swagger api 응답 코멘트 및 type
-  // @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
-  // //http 유형 및 주소
-  // @Post('findPW')
-  // async findPW(@Req() req){
-  //   //req의 body에서 nickname 변수화
-  //   const {nickname}=req.body
-  //   /*
-  //   * Service : findPw
-  //   * - 닉네임으로 DB에서 검색하여 암호화를 해제하여 PW제공
-  //   */
-  //   let result:string =await this.usersService.findPw(nickname);
-  //   /*
-  //   * Input
-  //   * - nickname : string
-  //   * Return 
-  //   * -- password   : string;
-  //    */
-  //   if(result!==null){
-  //     return {status:200,result:result}
-  //   }else{
-  //     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-  //   }
-  // }
-
-  //로그인 - 토큰 발급
-  //swagger 데코레이터
-  //body의 class type
-  @ApiBody({type:LoginInputType})
-  //swagger api 코멘트
-  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200.1, description: '로그인 실패.' })
-  //Guards 실행 데코레이터
-  /**
-   * Guards : LocalAuthGuard
-   * - req.nickname : string;
-   * - req.password : string;
-   * return : req.user
-   * - req.user.acceess : string 
-   * -- access token
-   * - req.user.refresh : string
-   * -- refresh token
-   */
-  @UseGuards(LocalAuthGuard)
-  //http 유형 및 주소
-  @Post('login')
-  async login(@Req() req) {
-    //guard의 결과가 req.user에 있어 변수화
-    const user = req.user;
-    return user;
-  }
-
-  //SNS로그인(전송)
-  //swagger 데코레이터
-  //body의 class type
-  @ApiBody({type:LoginInputType})
-  //swagger api 코멘트
-  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200.1, description: '로그인 실패.' })
-  //http 유형 및 주소
-  @Get('kakao')
-  async kakaoConnect() {
-    await this.usersService.kakaoConnect();
-  }
-
-  //SNS로그인(카카오톡) - 토큰 발급
-  //swagger 데코레이터
-  //body의 class type
-  @ApiBody({type:LoginInputType})
-  //swagger api 코멘트
-  @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200.1, description: '로그인 실패.' })
-  //http 유형 및 주소
-  @Post('kakao')
-  async kakaoLogin(@Query('code') code: string) {
-    //guard의 결과가 req.user에 있어 변수화
-    return this.usersService.kakaoLogin(code);
   }
 
   /**
@@ -324,4 +258,5 @@ export class UsersController {
       test:"test"
     });
   }
+
 }
