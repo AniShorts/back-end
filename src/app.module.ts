@@ -26,6 +26,8 @@ import { Chatting } from './chattings/entities/chatting.entity';
 import { CategoryvideoModule } from './categoryvideo/categoryvideo.module';
 import { Categoryvideo } from './categoryvideo/entities/categoryvideo.entity';
 import { Walkcomment } from './walkcomments/entities/walkcomment.entity';
+import { OauthModule } from './oauth/oauth.module';
+import { Oauth } from './oauth/entities/oauth.entity';
 const ENV = process.env;
 
 @Module({
@@ -44,6 +46,7 @@ const ENV = process.env;
       password: ENV.DATABASE_PASSWORD,
       database: ENV.DATABASE_DATABASE,
       entities: [
+        Oauth,
         Users,
         Walk,
         Category,
@@ -52,6 +55,7 @@ const ENV = process.env;
         Chatting,
         // Categoryvideo,
         Walkcomment,
+        Oauth,
       ],
 
       synchronize: true,
@@ -70,6 +74,7 @@ const ENV = process.env;
     CategoryModule,
     CategorylistModule,
     CategoryvideoModule,
+    OauthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
