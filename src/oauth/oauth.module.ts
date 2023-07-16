@@ -8,12 +8,14 @@ import { Oauth } from './entities/oauth.entity';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 import { DataSource } from 'typeorm';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     UsersModule,
     TypeOrmModule.forFeature([Oauth]),
     ConfigModule,
+    AuthModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 5,

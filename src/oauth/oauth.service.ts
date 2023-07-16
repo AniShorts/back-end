@@ -12,6 +12,7 @@ import { CreateUserDto } from 'src/users/dto/create-users.dto';
 import { Users } from 'src/users/entities/user.entity';
 import { hash } from 'bcrypt';
 import { SignupDto } from './dto/signup.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class OauthService {
@@ -20,7 +21,8 @@ export class OauthService {
     private configService: ConfigService,
     private http: HttpService,
     private readonly userService: UsersService,
-    private dataSource:DataSource
+    private dataSource:DataSource,
+    private readonly authService:AuthService
     ) {
     this.oauthRepository = oauthRepository;
   }
@@ -138,6 +140,17 @@ export class OauthService {
 
   async findOneByUserId(userId:number,vender:string){
     const userInfo= await this.oauthRepository.findOne({
+      relations: {
+        user: true,
+      },
+      select:{
+        id:true,
+        snsId:true,
+        access:true,
+        refresh:true,
+        user:{userId:true},
+        vender:true
+      },
       where: {
         user:{
           userId:userId
@@ -146,6 +159,54 @@ export class OauthService {
       }
     })
     return userInfo
+  }
+
+  async findOneBySNSID(snsId:string,vender:string){
+    const result=await this.oauthRepository.findOne({
+      relations: {
+        user: true,
+      },
+      select:{
+        id:true,
+        snsId:true,
+        access:true,
+        refresh:true,
+        user:{userId:true},
+        vender:true
+      },
+      where:{
+        vender:vender,
+        snsId:snsId
+      }
+    })
+    return result
+  }
+
+  async saveSNSAccessToken(access:string, userId:number){
+    await this.oauthRepository.update({user:{userId}},{
+      access
+    })
+    return;
+  }
+
+  async saveSNSRefreshToken(refresh:string, userId:number){
+    await this.oauthRepository.update({user:{userId}},{
+      refresh
+    })
+    return;
+  }
+
+  async login(userId:number,vender:string,access:string,refresh:string):Promise<{access:string,refresh:string}>{
+    await this.saveSNSAccessToken(access,userId);
+    await this.saveSNSRefreshToken(refresh,userId);
+    const access_token=await this.authService.createAccessToken({userId:userId});
+    const refresh_token=await this.authService.createRefreshToken({userId:userId});
+    await this.authService.saveAccessToken(access_token,userId)
+    await this.authService.saveRefreshToken(refresh_token,userId)
+    return {
+      access:access_token,
+      refresh:refresh_token
+    }
   }
 
 }

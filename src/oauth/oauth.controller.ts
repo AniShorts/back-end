@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, UseGuards, ConsoleLogger } from '@nestjs/common';
 import { OauthService } from './oauth.service';
 import { CreateOauthDto } from './dto/create-oauth.dto';
 import { UpdateOauthDto } from './dto/update-oauth.dto';
@@ -62,12 +62,30 @@ export class OauthController {
     await this.oauthService
       .postAxios(_hostName, _headers)
       .then(async(e) => {
-        const access:string=e.data.access_token;
-        const refresh:string=e.data.refresh_token;
-        return res.json({
-          access:e.data.access_token,
-          refresh:e.data.refresh_token
-        })
+        const sns_access:string=e.data.access_token;
+        const sns_refresh:string=e.data.refresh_token;
+        const snsInfo=await this.oauthService.getUserInfoKakao(sns_access);
+        const userInfo=await this.oauthService.findOneBySNSID(snsInfo.snsId,"kakao")
+        //userInfo!==null => 가입된 상태
+        //userInfo===null => 가입되지않은 상태
+        if(!userInfo){
+          return res.json({
+            signup_status:false,
+            access:sns_access,
+            refresh:sns_refresh,
+          })
+          //=> POST/kakao/signup 으로 요청시 회원가입
+        }else{
+          const {
+            access,
+            refresh
+          } = await this.oauthService.login(userInfo.user.userId,"kakao",sns_access,sns_refresh)
+          return res.json({
+            signup_status:true,
+            access:access,
+            refresh:refresh,
+          })
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -82,6 +100,15 @@ export class OauthController {
        */
   }  
 
+  /**
+   * @param req:SignupDto
+   * SignupDto={
+   *  access:string;
+   *  refresh:string;
+   *  nickname:string;
+   *  vender:string;
+   * }
+   */
   @Post('kakao/signup')
   async signupKakao(@Req() req:SignupDto){
     await this.oauthService.snsSignup(req)
