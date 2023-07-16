@@ -1,4 +1,3 @@
-import { Users } from 'src/users/entities/user.entity';
 import {
   BaseEntity,
   Column,
@@ -10,8 +9,11 @@ import {
   OneToMany,
 } from 'typeorm';
 
+import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { Videolike } from 'src/videolikes/entities/videolike.entity';
 
 @Entity({
   orderBy: {
@@ -21,43 +23,59 @@ import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.videoId)
+  @ManyToOne(() => Users, (users) => users.userId)
+  @OneToMany(() => Videolike, (videolikes) => videolikes.videolikeId)
+  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   videoId: number;
 
   @ApiProperty()
-  @Column()
-  @ManyToOne(() => Users, (users) => users.userId)
+  @Column({
+    type: 'int',
+    comment: 'user`s unique number',
+  })
   userId: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The number of videolike',
+  })
   likeNum: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'varchar',
+    comment: 'video_name',
+  })
   videoName: string;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'varchar',
+    comment: 'The destination of a video image',
+  })
   videoImg: string;
-
-  @ApiProperty()
-  @Column()
-  videoDest: string;
 
   @ApiProperty()
   @CreateDateColumn()
   createdAt: Timestamp;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The views of a video',
+  })
   views: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    type: 'int',
+    comment: 'The number of comments',
+  })
   commentNum: number;
 
   @ApiProperty()
   @Column('json')
   category: { id: number; name: string };
+  categoryVideos: Categoryvideo[];
 }

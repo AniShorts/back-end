@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
@@ -6,6 +11,8 @@ import { SearchVideoDto } from './dto/search-video.dto';
 import { Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
 import { Like } from 'typeorm';
+import { Users } from 'src/users/entities/user.entity';
+import { error } from 'console';
 
 @Injectable()
 export class VideosService {
@@ -14,10 +21,7 @@ export class VideosService {
   ) {}
   //동영상 업로드
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
-    const userId = 1;
-
     const newVideo = this.videosRepository.create({
-      userId,
       ...createVideoDto,
     });
     return await this.videosRepository.save(newVideo);
@@ -62,8 +66,8 @@ export class VideosService {
     return updatedVideo;
   }
   //동영상 삭제
-  async deleteVideo(id: number) {
-    const result = await this.videosRepository.delete(id);
+  async deleteVideo(userId: number, videoId: number) {
+    const result = await this.videosRepository.delete(videoId);
     return result;
   }
 
@@ -72,26 +76,15 @@ export class VideosService {
     const searchedVideosByName = await this.videosRepository.find({
       where: { videoName: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByName', searchedVideosByName);
-
     return searchedVideosByName;
   }
 
   //검색 - category으로 검색
   async searchByCate(keyword: SearchVideoDto) {
+    console.log(1);
     const searchedVideosByCategory = await this.videosRepository.find({
       where: { category: Like(`%${keyword.keyword}%`) },
     });
-    console.log('searchedVideosByCategory', searchedVideosByCategory);
-    /*   
-      //중복 제거
-      let set = new Set(searchedVideosByName.concat(searchedVideosByCategory));
-      const searchedVideos = [...set];
-      searchedVideos.filter((element, index) => {
-        return searchedVideos.indexOf(element) === index;
-      });
-      console.log('searchedVideos', searchedVideos); */
-
     return searchedVideosByCategory;
   }
 }

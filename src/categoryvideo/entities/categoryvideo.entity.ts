@@ -6,27 +6,25 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
+  BaseEntity,
 } from 'typeorm/index';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { Video } from 'src/videos/entities/video.entity';
 
 @Entity({
   orderBy: {
-    videoId: 'DESC',
+    categoryId: 'DESC',
   },
 })
-export class Categoryvideo {
+export class Categoryvideo extends BaseEntity {
   @ApiProperty()
-  @PrimaryColumn({
-    type: 'int',
-    comment: 'video id',
-  })
-  videoId: number;
-
-  @ApiProperty()
-  @PrimaryColumn({
-    type: 'int',
-    comment: 'video id',
-  })
+  @PrimaryGeneratedColumn('increment')
   categoryId: number;
+
+  @ManyToOne((type) => Video, { nullable: false })
+  @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
+  video: Video;
 }

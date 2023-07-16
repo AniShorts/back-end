@@ -10,6 +10,8 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import {Video} from '../../videos/entities/video.entity'
 import { Walk } from 'src/walks/entities/walk.entity';
+import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
+import { Oauth } from 'src/oauth/entities/oauth.entity';
 
 @Entity({
   orderBy:{
@@ -17,15 +19,19 @@ import { Walk } from 'src/walks/entities/walk.entity';
     }
 })
 export class Users {
-  
+  constructor(userId:number) {
+    this.userId = userId;
+  }
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
+  @OneToMany(() => Walkcomment, walkcomment => walkcomment.user)
   @OneToMany(() => Video, video => video.userId)
-  @OneToMany(() => Walk, walk => walk.userId)
+  @OneToMany(() => Oauth, Oauth => Oauth.user)
+  @OneToMany(() => Walk, walk => walk.user)
   userId:number;
 
   @ApiProperty()
-  @PrimaryColumn({
+  @Column({
       type: 'varchar',
       comment: 'nickname',
   })
@@ -64,6 +70,13 @@ export class Users {
       type: 'varchar',
       comment: 'refresh_token',
     })
-    refresh:string;
+  refresh:string;
+
+  @ApiProperty()
+  @Column({
+      type: 'varchar',
+      comment: 'signup type',
+    })
+  vender:string;
 
 }
