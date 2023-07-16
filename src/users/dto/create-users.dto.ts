@@ -3,4 +3,5 @@ export class CreateUserDto {
     password:string;
     phone:string;
     profileImg:string;
+    vender:string;
 }
