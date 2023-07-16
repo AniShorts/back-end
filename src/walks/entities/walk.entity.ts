@@ -7,10 +7,12 @@ import {
     UpdateDateColumn,
     OneToMany,
     ManyToOne,
+    JoinColumn,
   } from 'typeorm/index';
 import { ApiProperty } from '@nestjs/swagger';
 import { Users } from 'src/users/entities/user.entity';
 import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
+import { Chatting } from 'src/chattings/entities/chatting.entity';
   
 @Entity({
 orderBy:{
@@ -19,6 +21,9 @@ orderBy:{
 })
 
 export class Walk {
+  constructor(walkId:number){
+    this.walkId=walkId
+  }
     @ApiProperty()
     @PrimaryGeneratedColumn('increment')
     @OneToMany(type => Walkcomment, walkcomment => walkcomment.walk)
@@ -51,23 +56,18 @@ export class Walk {
         comment: 'location that user write',
       })
     @ApiProperty()
-    date:Date;
+    createAt:Date;
     
 
     @ApiProperty()
-    @ManyToOne(() => Users, users => users.userId)
-    @Column({
-      type: 'int',
-      comment: 'user`s unique number',
-    })
-    userId:number;
+    @ManyToOne((type) => Users,{ nullable: false })
+    @JoinColumn({name:"userId",referencedColumnName: "userId"})
+    user: Users;
     
     @ApiProperty() 
-    @Column({
-        type: 'int',
-        comment: 'chatting room`s unique number',
-      })
-    chatId:number;
+    @ManyToOne((type) => Chatting,{ nullable: false })
+    @JoinColumn({name:"chatId",referencedColumnName: "chatId"})
+    chat: Chatting;
     
     @ApiProperty()
     @Column({

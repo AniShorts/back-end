@@ -3,9 +3,13 @@ import { WalksService } from './walks.service';
 import { WalksController } from './walks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Walk } from './entities/walk.entity';
+import { UsersModule } from 'src/users/users.module';
+import { ChattingsModule } from 'src/chattings/chattings.module';
 
 @Module({
   imports: [
+    UsersModule,
+    ChattingsModule,
     TypeOrmModule.forFeature([Walk])
   ],
   controllers: [WalksController],
