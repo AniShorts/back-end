@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, UseGuards, ConsoleLogger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, UseGuards, ConsoleLogger, HttpException, HttpStatus } from '@nestjs/common';
 import { OauthService } from './oauth.service';
 import { CreateOauthDto } from './dto/create-oauth.dto';
 import { UpdateOauthDto } from './dto/update-oauth.dto';
@@ -6,12 +6,18 @@ import { ApiBody } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { SignupDto } from './dto/signup.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { sensitiveHeaders } from 'http2';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('oauth')
 export class OauthController {
   constructor(
     private readonly oauthService: OauthService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly authService:AuthService,
+    private readonly usersService:UsersService
     ) {}
 
   //sns test code
@@ -41,9 +47,12 @@ export class OauthController {
   //http 유형 및 주소
   @UseGuards(JwtAuthGuard)
   @Get('kakao/logout')
-  async kakaoDisConnect(@Req() req,@Res() res){
+  async kakaoLogout(@Req() req,@Res() res){
     const {userId}=req.user
-    await this.oauthService.DisConnect(userId,"kakao");
+    await this.oauthService.Logout(userId,"kakao");
+    return res.send({
+      result:true
+    })
   }
 
   //SNS로그인(카카오톡) - 토큰 발급
@@ -127,5 +136,37 @@ export class OauthController {
     };
     return await this.oauthService
       .postAxios(_hostName,_headers)
+  }
+
+  @Get('kakao/disconnect')
+  async kakaoDisConnect(@Req() req:any,@Query("user_id")snsId:string,@Query("referrer_type") referrer_type:string ){
+    // console.log(req.headers.authorization)
+    const token_type=req.headers.authorization.split(' ')[0]
+    const token_content=req.headers.authorization.split(' ')[1]
+    // curl -v -X "GET" "{authority}?user_id=0&referrer_type=UNLINK_FROM_APPS" \
+    // -H 'Authorization: KakaoAK de1eceb607b2d779795c687418a8c947'
+    console.log(token_type)
+    if(token_type==="KakaoAK" && referrer_type==="UNLINK_FROM_APPS"){
+      await this.oauthService.disconnect(snsId,"kakao")
+    }else if(token_type==="Bearer"){
+      const {userId}=await this.authService.tokenVerify(token_content)
+      const snsInfo=await this.oauthService.findOneByUserId(userId,"kakao")
+      const userInfo=await this.usersService.findOneByUserId(userId)
+      try {
+        await this.oauthService.disconnect(snsInfo.snsId,"kakao")
+        await this.oauthService.unlink(snsInfo)
+      } catch (error) {
+        if(!await this.usersService.findOneByUserId(userId)){
+          throw new HttpException('Faild Delete', HttpStatus.FORBIDDEN);
+        }else{
+          const dto:SignupDto={
+            ...snsInfo,
+            ...userInfo
+          }
+          await this.oauthService.snsSignup(dto)
+          throw new HttpException('Faild DisConnect', HttpStatus.FORBIDDEN);
+        }
+      }
+    }
   }
 }
