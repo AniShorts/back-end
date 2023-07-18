@@ -34,12 +34,10 @@ export class OauthService {
         userInfo=await this.getUserInfoKakao(dto.access)
     }
 
-    
-
     await this.dataSource.transaction(async(managerEntity)=>{
       const usersRepo=managerEntity.withRepository(this.userService.userRepository);
       const oauthRepo=managerEntity.withRepository(this.oauthRepository);
-
+      //유저정보 들고오기 좀더 수정
       //users
       const createUserDto:CreateUserDto={
         nickname:dto.nickname,
@@ -98,7 +96,8 @@ export class OauthService {
     const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
     return res.redirect(url);
   }
-  async DisConnect(userId:number,vender:string){
+
+  async Logout(userId:number,vender:string){
     const snsInfo=await this.findOneByUserId(userId,vender);
     let url:string=null;
     let headers=null;
@@ -207,6 +206,36 @@ export class OauthService {
       access:access_token,
       refresh:refresh_token
     }
+  }
+
+  async unlink(snsInfo:Oauth){
+    const url="https://kapi.kakao.com/v1/user/unlink";
+    const headers={
+      Headers:{ 
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization':'Bearer '+snsInfo.access
+      }
+    }
+    await this.postAxios(url,headers)
+  }
+
+  async disconnect(snsId:string,vender:string){
+    await this.dataSource.transaction(async(managerEntity)=>{
+      const usersRepo=managerEntity.withRepository(this.userService.userRepository);
+      const oauthRepo=managerEntity.withRepository(this.oauthRepository);
+      const snsInfo=await oauthRepo.findOne({
+        where:{
+          vender:vender,
+          snsId:snsId
+        }
+      })
+      await oauthRepo.delete({
+        id:snsInfo.id
+      })
+      await usersRepo.delete({
+        userId:snsInfo.user.userId
+      })
+    })
   }
 
 }
