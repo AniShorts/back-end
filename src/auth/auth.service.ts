@@ -1,11 +1,10 @@
-import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { Socket } from 'dgram';
-import { MessageBody } from '@nestjs/websockets';
+import { MailerService } from '@nestjs-modules/mailer';
 const ENV=process.env;
 
 @Injectable()
@@ -14,6 +13,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async validateUser(nickname: string, password: string): Promise<any> {
@@ -76,4 +76,26 @@ export class AuthService {
       throw new Error('Invalid token');
     }
   }
+
+  //email 전송 service
+  async sendEmail(userEmail:string){
+    const randomNum=Math.floor(Math.random()*1000000)
+    this.mailerService
+    .sendMail({
+      to: 'cesdea@naver.com',
+      from: 'noreplay@gmail.com',
+      subject: 'AniShorts join msg',
+      text: '인증번호입니다.',
+      html: '<b>'+randomNum+'</b>',
+    })
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      new ConflictException(error);
+    });
+    return randomNum
+  }
+
+
 }
