@@ -11,8 +11,6 @@ export class SingnupValidationPipe implements PipeTransform {
     if(!passwordRule.test(password)){
         throw new HttpException('Bad_Password', HttpStatus.FORBIDDEN);
     }
-    console.log("value : ",value)
-    console.log("metadata : ",metadata)
     return value;
   }
 }
