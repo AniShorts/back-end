@@ -2,14 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, Use
 import { OauthService } from './oauth.service';
 import { CreateOauthDto } from './dto/create-oauth.dto';
 import { UpdateOauthDto } from './dto/update-oauth.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { SignupDto } from './dto/signup.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { sensitiveHeaders } from 'http2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
+import { OauthOutputType, SignupDto, outputBase } from './oauthAnyType.dto';
+import { Response } from 'express';
+import { type } from 'os';
 
 @Controller('oauth')
 export class OauthController {
@@ -37,29 +39,56 @@ export class OauthController {
       </div>
     `;
   }
-  //SNS로그인(전송)
-  //http 유형 및 주소
+
+  /**
+   * SNS(KAKAO) 로그인
+   * @param res redirect > Kakao
+   */
+  @ApiOperation({ summary: '카카오 로그인 API', description: '카카오DEV OPEN API으로 redirect하여 동의창을 꺼낸다.' })
+  @ApiResponse({status:200, description: '카카오 url로 redirect'})
   @Get('kakao/login')
-  async kakaoConnect(@Res() res){
+  async kakaoConnect(@Res() res:Response){
     await this.oauthService.kakaoConnect(res);
   }
-  //SNS로그인(전송)
-  //http 유형 및 주소
+
+  /**
+   * SNS(Kakao) 로그인(전송)  
+   * @param req headers : authorization-Bearer, user : userId
+   * @param res success : true
+   * @returns 
+   */
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'kakao 로그아웃', description: '카카오에서 받은 access토큰을 만료시킨다.' })
+  @ApiResponse({status:200, description: '카카오에서 받은 토큰을 만료시킨다.', type:outputBase})
+  /**
+   * Guards : JwtAuthGuard
+   * - req.authorization.Bearer : string;
+   * return : req.user
+   * - req.user.userId : number 
+   */
   @UseGuards(JwtAuthGuard)
   @Get('kakao/logout')
-  async kakaoLogout(@Req() req,@Res() res){
+  async kakaoLogout(@Req() req,@Res() res:Response){
     const {userId}=req.user
     await this.oauthService.Logout(userId,"kakao");
-    return res.send({
-      result:true
-    })
+    return res.send(new outputBase(true))
   }
 
-  //SNS로그인(카카오톡) - 토큰 발급
-  //http 유형 및 주소
+  /**
+   * SNS로그인(카카오톡) - 토큰 발급
+   * @param qs code : kakao에서 보내는 고유코드
+   * @param res 
+   */  
+  @ApiOperation({ 
+    summary: 'Kakao 토큰 발급', 
+    description: '카카오에서 보내는 요청을 받는 api로 유저의 access, refresh토큰을 발급한다.' 
+  })
+  @ApiQuery({name:"code",description:"카카오에서 받은 고유 코드가 들어간다."})
+  @ApiResponse({status:200, description: '유저의 access, refresh 토큰을 발급한다.'})
   @Get('kakao/redirect')
-  async kakaoLoginLogicRedirect(@Query() qs, @Res() res) {
+  async kakaoLoginLogicRedirect(@Query() qs:{code:string}, @Res() res:Response) {
     const _code=qs.code
+    // const result= await this.oauthService.kakaoRedirect()
     const _restApiKey = this.configService.get<string>('REST_API_KEY')
     const _redirect_uri = this.configService.get<string>('REDIRECT_URI')
     const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${_code}`;
@@ -77,6 +106,7 @@ export class OauthController {
         const userInfo=await this.oauthService.findOneBySNSID(snsInfo.snsId,"kakao")
         //userInfo!==null => 가입된 상태
         //userInfo===null => 가입되지않은 상태
+        //access 토큰과 refresh토큰을 프론트에게 전달시 보안상의 문제가 생길 수 있다.
         if(!userInfo){
           return res.json({
             signup_status:false,
@@ -110,20 +140,31 @@ export class OauthController {
   }  
 
   /**
-   * @param req:SignupDto
-   * SignupDto={
-   *  access:string;
-   *  refresh:string;
-   *  nickname:string;
-   *  vender:string;
-   * }
+   * SNS(kakao)회원가입
+   * @param body SignupDto
+   * @param res send:OauthOutputType
+   * @returns res.send()
    */
+  @ApiBody({type:SignupDto})
+  @ApiOperation({ 
+    summary: 'SNS(Kakao)유저 생성 API', 
+    description: '중복방지를 위해서 닉네임을 받아서 유저 회원가입을 한다.' 
+  })
+  @ApiResponse({status:200, description: '유저를 생성한다.', type:OauthOutputType})
   @Post('kakao/signup')
-  async signupKakao(@Req() req:SignupDto){
-    await this.oauthService.snsSignup(req)
-  }
+  async signupKakao(@Body() body:SignupDto,@Res() res:Response){
+    const result:OauthOutputType=await this.oauthService.snsSignup(body)
+    return res.send(result)
+  }//회원가입을 시킨후 바로 로그인하는가?
 
-
+  /**
+   * Kakao에서 받은 토큰 리로드
+   * @param req 
+   * @returns 
+   */  
+  @ApiBody({type:Object})
+  @ApiOperation({ summary: 'Kakao 토큰 재발급', description: 'kakao에서 발급받은 토큰을 재발급한다.' })
+  @ApiResponse({status:200, description: '토큰 재발급',schema:{}})
   @Get('kakao/reload/access')
   async accessReload(@Req()req:any){
     const _restApiKey = this.configService.get<string>('REST_API_KEY');
@@ -138,6 +179,17 @@ export class OauthController {
       .postAxios(_hostName,_headers)
   }
 
+  /**
+   * kakao 연결끊기 == 서비스 탈퇴
+   * @param req 
+   * @param snsId 
+   * @param referrer_type 
+   */
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: '서비스 탈퇴', description: 'kakao나 홈페이지에서 회원탈퇴하여 sns 정보를 제거하는 api' })
+  @ApiQuery({name:"user_id",description:"kakao에서 보낸 유저의 고유 ID"})
+  @ApiQuery({name:"referrer_type",description:"요청 type"})
+  @ApiResponse({status:200, description: '유저에 대한 정보를 삭제한다.'})
   @Get('kakao/disconnect')
   async kakaoDisConnect(@Req() req:any,@Query("user_id")snsId:string,@Query("referrer_type") referrer_type:string ){
     // console.log(req.headers.authorization)

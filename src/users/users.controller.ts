@@ -1,108 +1,90 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards,Req,Res,HttpException, UsePipes, Query,} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Users } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-users.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
-import {SignupInputType,SignupOutputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType} from './userAnyType'
-import { HttpStatus } from '@nestjs/common/enums';
-import { resourceLimits } from 'worker_threads';
+import {SignupInputType,outputBase, outputBaseFalse, NicknameInputType, LoginInputType, LoginOutputType,CategoryType, PasswordType, UsersOutputType, UsersOutputTypeFaild} from './userAnyType'
 import { Request, Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { SingnupValidationPipe } from './validations/singup.pipe';
 import { ConfigService } from '@nestjs/config';
-import { map } from 'rxjs'
 
-//nestjs 컨트롤 데코레이터-user
 @Controller('users')
-//class
 export class UsersController {
-  //생성자
   constructor(
-    //service와 불러오기
     private readonly usersService: UsersService,
     private configService: ConfigService
     ) {}
 
-  //회원가입
-  //swagger 데코레이터
-  //body의 class type
+  /**
+   * 회원가입
+   * @param createUserDto body:SignupInputType
+   * @param res send:UsersOutputType
+   * @returns res.send()
+   */
   @ApiBody({type:SignupInputType})
-  //swagger api 코멘트
   @ApiOperation({ summary: '유저 생성 API', description: '유저를 생성한다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '유저를 생성한다.', type: SignupOutputType })
+  @ApiResponse({status:200, description: '유저를 생성한다.', type: UsersOutputType })
   @UsePipes(SingnupValidationPipe)
-  //http 유형 및 주소
   @Post("signup")
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto,@Res() res:Response) {
       /*
       *Service : createUser
       *- createDto를 DB에 저장함
       *- 닉네임 중복확인함
       *- 비밀번호 암호화(Hash)
       */
-      return await this.usersService.createUser(createUserDto);
+      const result:UsersOutputType=await this.usersService.createUser(createUserDto);
       /* 
       * Input
       * -CreateUserDto
-      * -- userId     : number;
-      * -- nickname   : string;
-      * -- password   : string;
-      * -- phone      : string;
-      * -- profileImg :string;
       * Return
-      * - {success:true,result:true} 
+      * - UsersOutputType
       */
+
+      return res.send(result)
   }
 
-  //로그인 - 토큰 발급
-  //swagger 데코레이터
-  //body의 class type
+  /**
+   * 로그인
+   * @param req body:LoginInputType
+   * @param res send:LoginOutputType
+   * @returns LoginOutputType
+   */
   @ApiBody({type:LoginInputType})
-  //swagger api 코멘트
   @ApiOperation({ summary: '유저 로그인 API', description: '유저를 로그인한다.' })
-  //swagger api 응답 코멘트 및 type
   @ApiResponse({status:200, description: '로그인 성공', type: LoginOutputType })
-  //swagger api 응답 코멘트 및 type
   @ApiResponse({status:200.1, description: '로그인 실패.' })
-  //Guards 실행 데코레이터
   /**
    * Guards : LocalAuthGuard
    * - req.nickname : string;
    * - req.password : string;
    * return : req.user
    * - req.user.acceess : string 
-   * -- access token
    * - req.user.refresh : string
-   * -- refresh token
    */
   @UseGuards(LocalAuthGuard)
-  //http 유형 및 주소
   @Post('login')
-  async login(@Req() req) {
+  async login(@Req() req,@Res() res:Response) {
     //guard의 결과가 req.user에 있어 변수화
     const user = req.user;
-    return user;
+    return res.send(new LoginOutputType(true,user.access,user.refresh));
   }
 
-  //가입시 닉네임 중복 확인하는 api
-  //swagger 데코레이터
-  //body의 class type
+  /**
+   * 가입시 닉네임 중복 확인하는 api
+   * @param body body:NicknameInputType
+   * @param res send:outputBase
+   * @returns outputBase
+   */
   @ApiBody({type:NicknameInputType})
-  //swagger api 코멘트
   @ApiOperation({ summary: '유저 닉네임 중첩확인 API', description: '유저의 닉네임의 중복을 확인한다..' })
-  //swagger api 응답 코멘트 및 type
   @ApiResponse({status:200, description: '중복이 아니다..', type: outputBase })
-  //swagger api 응답 코멘트 및 type
   @ApiResponse({status:200.1, description: '중복이다.', type: outputBaseFalse })
-  //http 유형 및 주소
   @Post('checkNickname')
-  async checkNickname(@Req() req){
+  async checkNickname(@Body() body:{nickname:string},@Res() res:Response){
     //req의 body에서 nickname 변수화
-    const {nickname}=req.Body
+    const {nickname}=body
 
     /*
     * Service : findOneByNickname
@@ -114,33 +96,29 @@ export class UsersController {
     * - nickname : string
     * Return
     * - Users
-    * -- userId     : number;
-    * -- nickname   : string;
-    * -- password   : string;
-    * -- phone      : string;
-    * -- profileImg : string;
-    * -- access     : string;
-    * -- refresh    : string;
     */
+
+   if(check){
+     return res.send(new outputBaseFalse(false))
+  }else{
+     return res.send(new outputBase(true))
+   }
     
-    return {result:check==null}
   }
 
-  //swagger 수정필요    
+  /**
+   * ID를 찾아주는 api
+   * @param req bpdy:NicknameInputType
+   * @param res send:UsersOutputType
+   * @returns UsersOutputType
+   */
   //가드를 사용하여 전화번호 인증 구현(적용 예정)
-  //ID를 찾아주는 api
-  //swagger 데코레이터
-  //body의 class type
   @ApiBody({type:NicknameInputType})
-  //swagger api 코멘트
   @ApiOperation({ summary: '아이디 찾기 API', description: '아이디 찾는다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '아이디 제공.', type: outputBase })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200.1, description: '제공되지 않음.', type: outputBaseFalse })
-  //http 유형 및 주소
+  @ApiResponse({status:200, description: '아이디 제공.', type: UsersOutputType })
+  @ApiResponse({status:200.1, description: '제공되지 않음.', type: UsersOutputTypeFaild })
   @Post('findId')
-  async findID(@Req() req){
+  async findID(@Req() req,@Res() res:Response){
     //req의 body에서 nickname 변수화
     const {nickname}=req.body
 
@@ -154,19 +132,12 @@ export class UsersController {
     * - nickname : string
     * Return
     * - Users
-    * -- userId     : number;
-    * -- nickname   : string;
-    * -- password   : string;
-    * -- phone      : string;
-    * -- profileImg : string;
-    * -- access     : string;
-    * -- refresh    : string;
     */
 
-    if(result!==null){
-      return {result:result}
+    if(result){
+      return res.send(new UsersOutputType(true,result))
     }else{
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      return res.send(new UsersOutputType(false,result))
     }
   }
 
@@ -174,17 +145,16 @@ export class UsersController {
    * 비밀번호 찾기가 불가능해지면서 변경부분에 변화가 필요하다.
    * 로그인 전에도 사용가능한 메소드로 변경해야한다.
    */
-  //비밀번호 변경
-  //swagger에 access token 적용
+  /**
+   * 비밀번호 변경
+   * @param req body:PasswordType
+   * @param res send:UsersOutputType
+   * @returns UsersOutputType
+   */
   @ApiBearerAuth('access-token')
-  //swagger 데코레이터
-  //body의 class type
   @ApiBody({type:PasswordType})
-  //swagger api 코멘트
   @ApiOperation({ summary: '유저 비밀번호 변경 API', description: '유저 비밀번호 변경한다.' })
-  //swagger api 응답 코멘트 및 type
-  @ApiResponse({status:200, description: '비밀번호 변경.', type: outputBase })
-  //Guards 실행 데코레이터
+  @ApiResponse({status:200, description: '비밀번호 변경.', type: UsersOutputType })
   /**
    * Guards : JwtAuthGuard
    * - req.authorization.Bearer : string;
@@ -192,12 +162,10 @@ export class UsersController {
    * - req.user.userId : number 
    */
   @UseGuards(JwtAuthGuard)
-  //http 유형 및 주소
   @Patch('')
-  async updatePassword(@Req() req) {
+  async updatePassword(@Req() req,@Res() res:Response) {
     //guard의 결과가 req.user에 있어 변수화
     const {userId}=req.user
-
     //req의 body에서 password 변수화
     const {password}=req.body
 
@@ -205,25 +173,28 @@ export class UsersController {
     * Service : updatePassword
     * - 해시화된 비밀번호으로 수정 
     */
-    return await this.usersService.updatePassword(userId,password)
+    const result= await this.usersService.updatePassword(userId,password)
     /*
     * Input
     * - userId : number
     * - password : string
     * Return
-    * - update`s result
+    * - Users
      */
+
+    return res.send(new UsersOutputType(true,result))
   }
 
-  //회원탈퇴
-  //swagger에 access token 적용
+  /**
+   * 회원탈퇴
+   * @param req header:authorization-Bearer,user:userId
+   * @param res success:outputBase, faild:UsersOutputTypeFaild
+   * @returns 
+   */
   @ApiBearerAuth('access-token')
-  //swagger 데코레이터
-  //swagger api 코멘트
   @ApiOperation({ summary: '유저 삭제 API', description: '유저 정보를 삭제한다.' })
-  //swagger api 응답 코멘트 및 type
   @ApiResponse({status:200, description: '회원탈퇴', type: outputBase })
-  //Guards 실행 데코레이터
+  @ApiResponse({status:200.1, description: '회원탈퇴 실패', type: UsersOutputTypeFaild })
   /**
    * Guards : JwtAuthGuard
    * - req.authorization.Bearer : string;
@@ -231,9 +202,8 @@ export class UsersController {
    * - req.user.userId : number 
    */
   @UseGuards(JwtAuthGuard)
-  //http 유형 및 주소
   @Delete('')
-  remove(@Req() req) {
+  async remove(@Req() req,@Res() res:Response) {
     //guard의 결과가 req.user에 있어 변수화
     const {userId}=req.user;
 
@@ -241,22 +211,17 @@ export class UsersController {
     * Service : removeUserByUserId
     * - userId으로 검색된 아이디 삭제 
     */
-    return this.usersService.removeUserByUserId(userId);
+    const result=await this.usersService.removeUserByUserId(userId);
     /*
     * Input
     * - userId : number
     * Return
     * - delete`s result
      */
+    if(result){
+      return res.send(new UsersOutputType(false,result))
+    }else{
+      return res.send(new outputBase(true))
+    }
   }
-
-  //token test
-  @UseGuards(JwtAuthGuard)
-  @Get('test')
-  test(@Req() req:Request, @Res() res:Response){
-    return res.status(200).send({
-      test:"test"
-    });
-  }
-
 }
