@@ -13,7 +13,7 @@ import { elementAt } from 'rxjs';
 @Injectable()
 export class ChattingsService {
   constructor(
-    @InjectRepository(Chatting) private chattingRepository: Repository<Chatting>,
+    @InjectRepository(Chatting) public chattingRepository: Repository<Chatting>,
     private readonly usersService: UsersService,
     private readonly authService:AuthService
     ) {
