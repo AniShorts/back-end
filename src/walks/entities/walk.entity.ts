@@ -59,12 +59,12 @@ export class Walk {
     createAt:Date;
     
 
-    @ApiProperty()
+    @ApiProperty({ type : () => Users })
     @ManyToOne((type) => Users,{ nullable: false })
     @JoinColumn({name:"userId",referencedColumnName: "userId"})
     user: Users;
     
-    @ApiProperty() 
+    @ApiProperty({ type : () => Chatting }) 
     @ManyToOne((type) => Chatting,{ nullable: false })
     @JoinColumn({name:"chatId",referencedColumnName: "chatId"})
     chat: Chatting;

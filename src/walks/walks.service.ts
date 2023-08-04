@@ -50,7 +50,7 @@ export class WalksService {
       createWalkDto={
         ...createWalkDto,
         curNum:1,
-        date:new Date(),
+        createAt:new Date(),
         chat:new Chatting(chatInfo.chatId)
       }
       
@@ -83,7 +83,7 @@ export class WalksService {
       pageNum=pageLimit
     }
     
-    let pageList:Number[]=[];
+    let pageList:number[]=[];
     let providePageNum=function(first:number){
       for(let i=first;i<first+pageSize;i++){
         pageList.push(i)
@@ -103,7 +103,7 @@ export class WalksService {
       providePageNum(pageNum-pageSize/2);
     }
 
-    const list:Object=await this.walkRepository.findAndCount({
+    const list:[Walk[],number]=await this.walkRepository.findAndCount({
       order:{
         walkId:'DESC'
       },
