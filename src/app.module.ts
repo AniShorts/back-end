@@ -77,7 +77,6 @@ const ENV = process.env;
     CategorylistModule,
     CategoryvideoModule,
     OauthModule,
-    VideolikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
