@@ -18,11 +18,10 @@ import { Video } from 'src/videos/entities/video.entity';
 export class Videolike extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @ManyToOne(() => Users, (users) => users.userId)
-  @ManyToOne(() => Video, (video) => video.videoId)
   videolikeId: number;
 
   @ApiProperty()
+  @ManyToOne(() => Users, (users) => users.userId)
   @Column({
     type: 'int',
     comment: 'user`s unique number',
@@ -30,6 +29,7 @@ export class Videolike extends BaseEntity {
   userId: number;
 
   @ApiProperty()
+  @ManyToOne(() => Video, (video) => video.videoId)
   @Column()
   videoId: number;
 }
