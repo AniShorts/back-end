@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   Entity,
+  JoinColumn,
 } from 'typeorm';
 
 import { Users } from 'src/users/entities/user.entity';
@@ -22,6 +23,8 @@ export class Videolike extends BaseEntity {
 
   @ApiProperty()
   @ManyToOne(() => Users, (users) => users.userId)
+  @JoinColumn({ name: 'userId', referencedColumnName: 'userId' })
+  user: Users;
   @Column({
     type: 'int',
     comment: 'user`s unique number',
@@ -30,6 +33,8 @@ export class Videolike extends BaseEntity {
 
   @ApiProperty()
   @ManyToOne(() => Video, (video) => video.videoId)
+  @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
+  video: Video;
   @Column()
   videoId: number;
 }

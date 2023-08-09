@@ -29,7 +29,7 @@ export class Users {
   @OneToMany(() => Video, (video) => video.userId)
   @OneToMany(() => Oauth, (Oauth) => Oauth.user)
   @OneToMany(() => Walk, (walk) => walk.user)
-  @OneToMany(() => Videolike, (Videolike) => Videolike.userId)
+  @OneToMany(() => Videolike, (Videolike) => Videolike.user)
   userId: number;
 
   @ApiProperty()
