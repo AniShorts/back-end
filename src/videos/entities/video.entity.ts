@@ -23,12 +23,11 @@ import { Videolike } from 'src/videolikes/entities/videolike.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @ManyToOne(() => Users, (users) => users.userId)
-  @OneToMany(() => Videolike, (videolikes) => videolikes.videolikeId)
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
+  @OneToMany(() => Videolike, (videolikes) => videolikes.videoId)
   videoId: number;
 
   @ApiProperty()
+  @ManyToOne(() => Users, (users) => users.userId)
   @Column({
     type: 'int',
     comment: 'user`s unique number',
@@ -75,6 +74,7 @@ export class Video extends BaseEntity {
   commentNum: number;
 
   @ApiProperty()
+  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   @Column('json')
   category: { id: number; name: string };
   categoryVideos: Categoryvideo[];
