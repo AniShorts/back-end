@@ -1,4 +1,4 @@
-import { Injectable,HttpException ,HttpStatus } from '@nestjs/common';
+import { Injectable,HttpException ,HttpStatus, Delete } from '@nestjs/common';
 import { Users } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,6 +8,7 @@ import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom, map } from 'rxjs';
+import { UsersOutputType } from './userAnyType';
 
 @Injectable()
 export class UsersService {
@@ -24,15 +25,20 @@ export class UsersService {
   1. nickname의 중복을 확인하여 insert의 결정한다. > 아닌 경우 에러를 토해낸다.
   2. 비밀번호를 암호화하여 DB에 저장한다.
    */
-  async createUser(createUserDto: CreateUserDto):Promise<Object> {
+  async createUser(createUserDto: CreateUserDto):Promise<UsersOutputType> {
     let nickname_check=await this.findOneByNickname(createUserDto.nickname)
     if(nickname_check!==null){
       throw new HttpException('Exist NickName', HttpStatus.FORBIDDEN);
     }else{
-      const hashedPassword = await hash(createUserDto.password, 10);
-      createUserDto.password=hashedPassword
-      let user=await this.userRepository.save({...createUserDto})
-      return {success:true,result:true};
+      try {
+        const hashedPassword = await hash(createUserDto.password, 10);
+        createUserDto.password=hashedPassword
+        let user=await this.userRepository.save({...createUserDto})
+        delete createUserDto.password
+        return new UsersOutputType(true,createUserDto)
+      } catch (error) {
+        return new UsersOutputType(false,createUserDto)
+      }
     }
   }
   
@@ -86,14 +92,16 @@ export class UsersService {
         throw new HttpException('Not Change PW', HttpStatus.FORBIDDEN);
       }
       const hashedPassword = await hash(password, 10);
-      return await this.userRepository.update({userId},{  
+      await this.userRepository.update({userId},{  
         password:hashedPassword
       })
+      return await this.findOneByUserId(userId);
     }
       
     //가입 정보 삭제
     async removeUserByUserId(userId:number) {
-      return await this.userRepository.delete({userId})
+      await this.userRepository.delete({userId})
+      return await this.findOneByUserId(userId);
     }
     
     async saveRefreshToken(refresh:string, userId:number){
