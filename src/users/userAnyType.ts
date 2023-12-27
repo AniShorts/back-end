@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-users.dto';
 class category{
     id:number;
     name:string;
@@ -50,7 +51,7 @@ class LoginInputType extends NicknameInputType{
         super();
     }
     @ApiProperty({
-        example: '1234',
+        example: '!12345qwer',
         description: '유저 비밀번호',
         required: true,
     })
@@ -58,31 +59,90 @@ class LoginInputType extends NicknameInputType{
 }
 
 class outputBase{
+    constructor(success:boolean){
+        this.success=success
+    }
     @ApiProperty({
         example: 'true',
-        description: '결과',
+        description: 'api 결과로서 true의 경우 성공 or 해당 api의 기능과 맞다는 의미이다.',
         required: true,
     })
-    result:boolean;
-}
-class outputBaseFalse{
-    @ApiProperty({
-        example: 'false',
-        description: '결과',
-        required: true,
-    })
-    result:boolean;
-}
-class SignupOutputType extends outputBase{
-    constructor(){
-        super();
-    }
-    @ApiProperty()
     success:boolean;
 }
+class outputBaseFalse{
+    constructor(success:boolean){
+        this.success=success
+    }
+    @ApiProperty({
+        example: 'false',
+        description: 'api 결과로서 false의 경우 실패 or 해당 api에 기능에 의해 부정한다는것이다.',
+        required: true,
+    })
+    success:boolean;
+}
+class UsersOutputType extends outputBase{
+    constructor(
+        success:boolean,
+        result:{
+            nickname:string;
+            phone:string;
+            profileImg:string;
+            vender:string;
+        }){
+            super(success);
+            this.result=result
+        }
+
+    @ApiProperty({
+        example: `{nickname:아모씨,phone:010-1234-5678,profileImg:url,vender:homepage}`,
+        description: '유저 정보로 구성 원소로는 nickname, phone, profileImg, vender가있다',
+        required: true,
+    })
+    result:{
+        nickname:string;
+        phone:string;
+        profileImg:string;
+        vender:string;
+    };
+}
+
+class UsersOutputTypeFaild extends outputBaseFalse{
+    constructor(
+        success:boolean,
+        result:{
+            nickname:string;
+            phone:string;
+            profileImg:string;
+            vender:string;
+        }){
+            super(success);
+            this.result=result
+        }
+
+    @ApiProperty({
+        example: `{nickname:아모씨,phone:010-1234-5678,profileImg:url,vender:homepage}`,
+        description: '유저 정보로 구성 원소로는 nickname, phone, profileImg, vender가있다',
+        required: true,
+    })
+    result:{
+        nickname:string;
+        phone:string;
+        profileImg:string;
+        vender:string;
+    };
+}
+
 class LoginOutputType extends outputBase{
+    constructor(success:boolean,access_token:string,refresh_token:string){
+        super(success);
+        this.access_token=access_token;
+        this.refresh_token=refresh_token
+    }
+
     @ApiProperty()
-    token:string;
+    access_token:string;
+    @ApiProperty()
+    refresh_token:string;
 }
 
 class CategoryType{
@@ -102,7 +162,7 @@ class PasswordType{
     password:string
 }
 export{
-    SignupOutputType,
+    UsersOutputType,
     outputBase,
     outputBaseFalse,
     SignupInputType,
@@ -111,4 +171,5 @@ export{
     LoginOutputType,
     CategoryType,
     PasswordType,
+    UsersOutputTypeFaild,
 }
