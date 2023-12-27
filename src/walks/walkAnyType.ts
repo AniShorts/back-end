@@ -1,27 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-class ListElement{
-    walkId:number;
-    walkTitle:string;
-    location:string;
-    date:Date;
-    userId:number;
-    chatId:number;
-    maxNum:number;
-    curNum:number;
-}
-class WalkGet extends ListElement{
-    constructor(){
-        super()
+import { Walk } from './entities/walk.entity';
+class outputBase{
+    constructor(success:boolean){
+        this.success=success
     }
-    walkContent:string
-}
-class WalkBoardList{
     @ApiProperty({
-        example: '[{"walkId":1,"walkTitle":"TEST 산책","location":"부산 광역시 부전동","date":"2023.02.06","userId":1,"chatId":1,"maxNum":3,"curNum":1},{"walkId":2,"walkTitle":"TEST 산책","location":"부산 광역시 부전동","date":"2023.02.06","userId":1,"chatId":1,"maxNum":3,"curNum":1}]',
+        example: 'true',
+        description: 'api 결과로서 true의 경우 성공 or 해당 api의 기능과 맞다는 의미이다.',
+        required: true,
+    })
+    success:boolean;
+}
+
+class WalkBoardList extends outputBase{
+    constructor(
+        success:boolean,
+        walks:Walk[],
+        pageNum:number,
+        pageList:number[]
+        ){
+            super(success);
+            this.walks=walks
+            this.pageNum=pageNum
+            this.pageList=pageList
+        }
+
+    @ApiProperty({
+        example: '[{"walkId":1,"walkTitle":"TEST 산책","location":"부산 광역시 부전동","createAt":"2023.02.06","userId":1,"chatId":1,"maxNum":3,"curNum":1},{"walkId":2,"walkTitle":"TEST 산책","location":"부산 광역시 부전동","createAt":"2023.02.06","userId":1,"chatId":1,"maxNum":3,"curNum":1}]',
         description: '게시물 정보',
         required: true,
     })
-    list:ListElement[]
+    walks:Walk[]
 
     @ApiProperty({
         example: '1',
@@ -38,13 +47,20 @@ class WalkBoardList{
     pageList:number[]
 }
 
-class WalkBoardGet{
+class WalkOutputType extends outputBase{
+    constructor(
+        success:boolean,
+        result:Walk){
+            super(success);
+            this.result=result
+        }
+
     @ApiProperty({
-        example: '{"walkId":1,"walkTitle":"TEST 산책","location":"부산 광역시 부전동","date":"2023.02.06","userId":1,"chatId":1,"maxNum":3,"curNum":1}',
-        description: '산책 게시물 정보',
+        example: `{walkId:1,walkTitle:글제목,location:약속위치,createAt:2023/08/04,userId:1,chatId:1,maxNum:3,curNum:1}`,
+        description: '',
         required: true,
     })
-    data:WalkGet
+    result:Walk;
 }
 
 class WalkInput{
@@ -74,7 +90,7 @@ class WalkInput{
         description: '날짜(형식 미정)',
         required: true,
     })
-    date:Date;
+    createAt:Date;
 
     @ApiProperty({
         example: '5',
@@ -82,15 +98,7 @@ class WalkInput{
         required: true,
     })
     maxNum:number;
-}
-
-class Result{
-    @ApiProperty({
-        example: 'true',
-        description: '요청 결과-성공',
-        required: true,
-    })
-    result:string;
+    
 }
 
 class WalkUpdate{
@@ -110,9 +118,7 @@ class WalkUpdate{
 }
 export{
     WalkBoardList,
-    WalkBoardGet,
     WalkInput,
-    Result,
     WalkUpdate,
-
+    WalkOutputType,
 }

@@ -29,7 +29,7 @@ export class CreateWalkDto {
         description: '작성 날짜',
         required: true,
     })
-    date:Date;
+    createAt:Date;
 
     @ApiProperty({
         example: '"userId":1',
