@@ -5,6 +5,8 @@ import {
   Timestamp,
   CreateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
   Entity,
   OneToMany,
 } from 'typeorm';
@@ -72,10 +74,18 @@ export class Video extends BaseEntity {
     comment: 'The number of comments',
   })
   commentNum: number;
-
+  /* 
   @ApiProperty()
   @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   @Column('json')
   category: { id: number; name: string };
+  categoryVideos: Categoryvideo[]; */
+  @ApiProperty()
+  @ManyToMany(() => Category, { cascade: true })
+  @JoinTable()
+  categories: Category[];
+
+  @ApiProperty()
+  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
   categoryVideos: Categoryvideo[];
 }

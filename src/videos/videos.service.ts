@@ -24,6 +24,7 @@ export class VideosService {
     const newVideo = this.videosRepository.create({
       ...createVideoDto,
     });
+    console.log(9);
     return await this.videosRepository.save(newVideo);
   }
   //전체 동영상
@@ -59,6 +60,7 @@ export class VideosService {
 
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
+    console.log(updateVideoDto);
     const updatedVideo = await this.videosRepository.update(
       { videoId: id },
       { ...updateVideoDto },
@@ -83,7 +85,7 @@ export class VideosService {
   async searchByCate(keyword: SearchVideoDto) {
     console.log(1);
     const searchedVideosByCategory = await this.videosRepository.find({
-      where: { category: Like(`%${keyword.keyword}%`) },
+      where: { categories: Like(`%${keyword.keyword}%`) },
     });
     return searchedVideosByCategory;
   }

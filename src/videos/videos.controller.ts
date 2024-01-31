@@ -16,9 +16,9 @@ import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
-import { Video } from './entities/video.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common/decorators';
+import { Users } from 'src/users/entities/user.entity';
 
 @Controller('videos')
 export class VideosController {
@@ -28,8 +28,8 @@ export class VideosController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
-    const { userId } = request.user;
-    createVideoDto.userId = userId;
+    //const { userId } = request.user;
+    createVideoDto.user = new Users(request.user.userId);
     return await this.videosService.createVideo(createVideoDto);
   }
 
