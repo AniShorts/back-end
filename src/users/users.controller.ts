@@ -185,6 +185,21 @@ export class UsersController {
     return res.send(new UsersOutputType(true,result))
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('info')
+  async getUserInfo(@Req() req,@Res() res:Response) {
+    const {userId}=req.user
+    const info=await this.usersService.findOneByUserId(userId);
+    const result={
+      nickname:info.nickname,
+      phone:info.phone,
+      profileImg:info.profileImg,
+      vender:info.vender,
+  }
+    return res.send(new UsersOutputType(true,result))
+  }
+
+
   /**
    * 회원탈퇴
    * @param req header:authorization-Bearer,user:userId
