@@ -185,6 +185,19 @@ export class UsersController {
     return res.send(new UsersOutputType(true,result))
   }
 
+   /**
+   * 마이페이지
+   * @returns UsersOutputType
+   */
+  @ApiBearerAuth('access-token')
+   @ApiOperation({ summary: '유저 정보 API', description: '유저를 정보획득.' })
+   @ApiResponse({status:200, description: '정보획득 성공', type: UsersOutputType })
+  /**
+   * Guards : JwtAuthGuard
+   * - req.authorization.Bearer : string;
+   * return : req.user
+   * - req.user.userId : number 
+   */
   @UseGuards(JwtAuthGuard)
   @Get('info')
   async getUserInfo(@Req() req,@Res() res:Response) {
