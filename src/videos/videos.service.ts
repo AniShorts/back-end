@@ -45,10 +45,10 @@ export class VideosService {
     return video;
   }
   //유저별
-  async findUsersVideos(id: number) {
+  /*   async findUsersVideos(id: number) {
     const video = await this.videosRepository.find({
       where: {
-        userId: id,
+        user : id,
       },
     });
 
@@ -56,7 +56,7 @@ export class VideosService {
       throw new NotFoundException(`Can't find Video with id: ${id}`);
     }
     return video;
-  }
+  } */
 
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
@@ -83,7 +83,6 @@ export class VideosService {
 
   //검색 - category으로 검색
   async searchByCate(keyword: SearchVideoDto) {
-    console.log(1);
     const searchedVideosByCategory = await this.videosRepository.find({
       where: { categories: Like(`%${keyword.keyword}%`) },
     });

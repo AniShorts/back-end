@@ -57,13 +57,14 @@ export class VideosController {
     return await this.videosService.findOneVideo(+id);
   }
 
-  //유저별
+  /*   //유저별
   @Get('user/:id')
   async findUsersVideos(@Param('id') id: number) {
     return await this.videosService.findUsersVideos(+id);
-  }
+  } */
 
   //동영상 업데이트
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateVideo(
     @Param('id') id: number,
@@ -78,7 +79,7 @@ export class VideosController {
     const { userId } = request.user;
     console.log(userId);
     const video = await this.videosService.findOneVideo(videoId);
-    if (userId !== video.userId) {
+    if (userId !== video.user) {
       throw new HttpException(
         'Not same user created video',
         HttpStatus.FORBIDDEN,
