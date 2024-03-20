@@ -9,6 +9,7 @@ import {
   JoinTable,
   Entity,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 import { Users } from 'src/users/entities/user.entity';
@@ -25,16 +26,13 @@ import { Videolike } from 'src/videolikes/entities/videolike.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany(() => Videolike, (videolikes) => videolikes.videoId)
+  @OneToMany(() => Videolike, (videolikes) => videolikes.video)
   videoId: number;
 
   @ApiProperty()
-  @ManyToOne(() => Users, (users) => users.userId)
-  @Column({
-    type: 'int',
-    comment: 'user`s unique number',
-  })
-  userId: number;
+  @ManyToOne(() => Users, (user) => user.userId)
+  @JoinColumn({ name: 'userId' })
+  user: Users;
 
   @ApiProperty()
   @Column({
@@ -58,6 +56,13 @@ export class Video extends BaseEntity {
   videoImg: string;
 
   @ApiProperty()
+  @Column({
+    type: 'varchar',
+    comment: 'The destination of a video',
+  })
+  videoDest: string;
+
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Timestamp;
 
@@ -74,18 +79,22 @@ export class Video extends BaseEntity {
     comment: 'The number of comments',
   })
   commentNum: number;
-  /* 
-  @ApiProperty()
+
+  /*   @ApiProperty()
   @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   @Column('json')
   category: { id: number; name: string };
   categoryVideos: Categoryvideo[]; */
-  @ApiProperty()
+  /*   @ApiProperty()
   @ManyToMany(() => Category, { cascade: true })
   @JoinTable()
   categories: Category[];
 
   @ApiProperty()
   @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
-  categoryVideos: Categoryvideo[];
+  categoryVideos: Categoryvideo[]; */
+
+  @ApiProperty()
+  @Column({ type: 'json' })
+  categories: any[];
 }
