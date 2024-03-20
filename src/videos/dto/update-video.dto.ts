@@ -12,5 +12,5 @@ export class UpdateVideoDto extends PartialType(CreateVideoDto) {
   updatedAt: Timestamp;
   views: number;
   commentNum: number;
-  category: { id: number; name: string };
+  categories: { id: number; name: string };
 }
