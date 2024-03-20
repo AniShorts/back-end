@@ -28,7 +28,6 @@ export class VideosController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
-    //const { userId } = request.user;
     createVideoDto.user = new Users(request.user.userId);
     return await this.videosService.createVideo(createVideoDto);
   }
@@ -40,7 +39,7 @@ export class VideosController {
     return await this.videosService.findAllVideos();
   }
 
-  //검색-동영상 하나를 불러오는 GET 요청이 @param을 받기 때문에 순서때문에 애러 발생
+  //검색
   @Get('searchByname')
   async searchByName(@Query() searchVideoDto: SearchVideoDto) {
     return await this.videosService.searchByName(searchVideoDto);
@@ -57,11 +56,11 @@ export class VideosController {
     return await this.videosService.findOneVideo(+id);
   }
 
-  /*   //유저별
+  //유저별
   @Get('user/:id')
   async findUsersVideos(@Param('id') id: number) {
     return await this.videosService.findUsersVideos(+id);
-  } */
+  }
 
   //동영상 업데이트
   @UseGuards(JwtAuthGuard)

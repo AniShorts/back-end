@@ -24,7 +24,6 @@ export class VideosService {
     const newVideo = this.videosRepository.create({
       ...createVideoDto,
     });
-    console.log(9);
     return await this.videosRepository.save(newVideo);
   }
   //전체 동영상
@@ -45,18 +44,17 @@ export class VideosService {
     return video;
   }
   //유저별
-  /*   async findUsersVideos(id: number) {
+  async findUsersVideos(id: number) {
     const video = await this.videosRepository.find({
-      where: {
-        user : id,
-      },
+      where: { user: { userId: id } },
+      relations: ['user'],
     });
 
     if (!video) {
       throw new NotFoundException(`Can't find Video with id: ${id}`);
     }
     return video;
-  } */
+  }
 
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
