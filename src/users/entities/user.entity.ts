@@ -26,7 +26,7 @@ export class Users {
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
   @OneToMany(() => Walkcomment, (walkcomment) => walkcomment.user)
-  @OneToMany(() => Video, (video) => video.userId)
+  @OneToMany(() => Video, (video) => video.user)
   @OneToMany(() => Oauth, (Oauth) => Oauth.user)
   @OneToMany(() => Walk, (walk) => walk.user)
   @OneToMany(() => Videolike, (Videolike) => Videolike.user)
