@@ -13,18 +13,25 @@ import {
 
 import { ApiProperty } from '@nestjs/swagger';
 import { Video } from 'src/videos/entities/video.entity';
+import { Categorylist } from 'src/categorylist/entities/categorylist.entity';
 
 @Entity({
   orderBy: {
-    categoryId: 'DESC',
+    id: 'DESC',
   },
 })
-export class Categoryvideo extends BaseEntity {
-  @ApiProperty()
-  @PrimaryGeneratedColumn('increment')
+export class Categoryvideo {
+  @PrimaryColumn()
   categoryId: number;
 
-  @ManyToOne((type) => Video, { nullable: false })
+  @PrimaryColumn()
+  videoId: number;
+
+  @ManyToOne(() => Categorylist, (categorylist) => categorylist.categoryId)
+  @JoinColumn({ name: 'categoryId', referencedColumnName: 'categoryId' })
+  category: Categorylist;
+
+  @ManyToOne(() => Video, (video) => video.videoId)
   @JoinColumn({ name: 'videoId', referencedColumnName: 'videoId' })
   video: Video;
 }

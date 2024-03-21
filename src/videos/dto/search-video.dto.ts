@@ -5,6 +5,6 @@ export class SearchVideoDto {
   userId: number;
   videoId: number;
   videoName: string;
-  categories: { id: number; name: string };
+  categories: any[];
   keyword: string;
 }

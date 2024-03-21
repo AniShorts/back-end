@@ -29,6 +29,7 @@ export class VideosController {
   @Post()
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
     createVideoDto.user = new Users(request.user.userId);
+
     return await this.videosService.createVideo(createVideoDto);
   }
 
@@ -45,10 +46,10 @@ export class VideosController {
     return await this.videosService.searchByName(searchVideoDto);
   }
 
-  @Get('searchBycate')
+  /* @Get('searchBycate')
   async searchByCate(@Query() searchVideoDto: SearchVideoDto) {
     return await this.videosService.searchByCate(searchVideoDto);
-  }
+  } */
 
   //동영상 하나
   @Get(':id')

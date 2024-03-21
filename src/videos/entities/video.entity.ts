@@ -15,8 +15,8 @@ import {
 import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
-import { Category } from 'src/category/entities/category.entity';
 import { Videolike } from 'src/videolikes/entities/videolike.entity';
+import { Categorylist } from 'src/categorylist/entities/categorylist.entity';
 
 @Entity({
   orderBy: {
@@ -26,11 +26,10 @@ import { Videolike } from 'src/videolikes/entities/videolike.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @OneToMany(() => Videolike, (videolikes) => videolikes.video)
   videoId: number;
 
   @ApiProperty()
-  @ManyToOne(() => Users, (user) => user.userId)
+  @ManyToOne(() => Users)
   @JoinColumn({ name: 'userId' })
   user: Users;
 
@@ -80,21 +79,14 @@ export class Video extends BaseEntity {
   })
   commentNum: number;
 
-  /*   @ApiProperty()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
-  @Column('json')
-  category: { id: number; name: string };
-  categoryVideos: Categoryvideo[]; */
-  /*   @ApiProperty()
-  @ManyToMany(() => Category, { cascade: true })
-  @JoinTable()
-  categories: Category[];
-
-  @ApiProperty()
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.video)
-  categoryVideos: Categoryvideo[]; */
-
-  @ApiProperty()
-  @Column({ type: 'json' })
-  categories: any[];
+  @ManyToMany(() => Categorylist)
+  @JoinTable({
+    name: 'categoryvideo', // Join table name
+    joinColumn: { name: 'videoId', referencedColumnName: 'videoId' }, // Correct, assuming videoId is Video's PK
+    inverseJoinColumn: {
+      name: 'categoryId',
+      referencedColumnName: 'categoryId',
+    }, // Correct, assuming categoryId is Categorylist's PK
+  })
+  categories?: Categorylist[];
 }

@@ -10,21 +10,30 @@ import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
 import { Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
+import { CategorylistController } from 'src/categorylist/categorylist.controller';
 import { Like } from 'typeorm';
 import { Users } from 'src/users/entities/user.entity';
 import { error } from 'console';
+import { CategorylistService } from 'src/categorylist/categorylist.service';
+import { create } from 'domain';
 
 @Injectable()
 export class VideosService {
   constructor(
     @InjectRepository(Video) private videosRepository: Repository<Video>,
+    private categoryListService: CategorylistService,
   ) {}
   //동영상 업로드
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
-    const newVideo = this.videosRepository.create({
+    console.log('createVideo', createVideoDto);
+    await this.categoryListService.checkCategory(createVideoDto.categories);
+
+    const video = this.videosRepository.create({
       ...createVideoDto,
     });
-    return await this.videosRepository.save(newVideo);
+    await this.videosRepository.save(video);
+
+    return video;
   }
   //전체 동영상
   async findAllVideos() {
@@ -80,10 +89,10 @@ export class VideosService {
   }
 
   //검색 - category으로 검색
-  async searchByCate(keyword: SearchVideoDto) {
+  /*   async searchByCate(keyword: SearchVideoDto) {
     const searchedVideosByCategory = await this.videosRepository.find({
       where: { categories: Like(`%${keyword.keyword}%`) },
     });
     return searchedVideosByCategory;
-  }
+  } */
 }

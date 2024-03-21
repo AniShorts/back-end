@@ -11,5 +11,5 @@ export class CreateVideoDto {
   createdAt: Timestamp;
   views: number;
   commentNum: number;
-  categories: { id: number; name: string };
+  categories: any[];
 }

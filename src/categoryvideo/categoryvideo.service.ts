@@ -14,38 +14,41 @@ export class CategoryvideoService {
   ) {
     this.categoryvideoRepository = categoryvideoRepository;
   }
-  async create(body:{videoId:number,categoryId:number}) {
-    return await this.categoryvideoRepository.save({video:{videoId:body.videoId},categoryId:body.categoryId});
+  /*   async create(body: { videoId: number; categoryId: number }) {
+    return await this.categoryvideoRepository.save({
+      video: { videoId: body.videoId },
+      categoryId: body.categoryId,
+    });
   }
 
   async removeByVideoId(videoId: number) {
     return await this.categoryvideoRepository.delete({
-      video:{videoId:videoId},
+      video: { videoId: videoId },
     });
     // return `This action removes a #${id} category`;
-  }
-
+  } */
+  /* 
   async detailDelVideo(createCategoryvideoDto: CreateCategoryvideoDto) {
     return await this.categoryvideoRepository.delete({
       video:{videoId:createCategoryvideoDto.video.videoId},categoryId:createCategoryvideoDto.categoryId
     });
-  }
+  } */
 
-  async findByVideoId(videoId: number): Promise<Categoryvideo[]> {
+  /*   async findByVideoId(videoId: number): Promise<Categoryvideo[]> {
     let list = await this.categoryvideoRepository.find({
       where: {
-        video:{videoId:videoId},
+        video: { videoId: videoId },
       },
     });
     return list;
-  }
+  } */
 
-  async findCategory(categoryId: number): Promise<Categoryvideo[]> {
+  /*   async findCategory(categoryId: number): Promise<Categoryvideo[]> {
     let list = await this.categoryvideoRepository.find({
       where: {
         categoryId: categoryId,
       },
     });
     return list;
-  }
+  } */
 }

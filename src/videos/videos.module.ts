@@ -5,10 +5,12 @@ import { VideosController } from './videos.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Video } from './entities/video.entity';
 import { UsersModule } from 'src/users/users.module';
+import { CategorylistModule } from 'src/categorylist/categorylist.module';
 
 @Module({
   imports: [
     UsersModule,
+    CategorylistModule,
     TypeOrmModule.forFeature([Video]),
     MulterModule.register({ dest: './uploads' }),
   ],
