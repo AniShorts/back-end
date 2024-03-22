@@ -14,27 +14,29 @@ export class CategorylistService {
     this.categorylistRepository = categorylistRepository;
   }
 
-  public async checkCategory(categories: any[]): Promise<void> {
-    console.log('categories: ', categories);
+  public async checkCategory(categories: any[]): Promise<any[]> {
+    let categoryIds = [];
     for (const category of categories) {
-      await this.create(category);
+      categoryIds.push(await this.create(category));
     }
+    return categoryIds;
   }
+
   async create(category: string) {
     console.log('category:', category);
 
-    const checkCate = await this.categorylistRepository.findOne({
+    let checkCate = await this.categorylistRepository.findOne({
       where: { categoryName: category },
     });
     if (!checkCate) {
-      console.log('c', category);
-
       const newCategory = this.categorylistRepository.create({
         categoryName: category,
       });
-      return await this.categorylistRepository.save(newCategory);
+      checkCate = await this.categorylistRepository.save(newCategory);
+
+      return checkCate.categoryId;
     } else {
-      return;
+      return checkCate.categoryId;
     }
   }
 

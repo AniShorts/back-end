@@ -14,13 +14,13 @@ export class CategoryvideoService {
   ) {
     this.categoryvideoRepository = categoryvideoRepository;
   }
-  /*   async create(body: { videoId: number; categoryId: number }) {
+  public async create(body: { videoId: number; categoryId: number }) {
     return await this.categoryvideoRepository.save({
       video: { videoId: body.videoId },
       categoryId: body.categoryId,
     });
   }
-
+  /* 
   async removeByVideoId(videoId: number) {
     return await this.categoryvideoRepository.delete({
       video: { videoId: videoId },

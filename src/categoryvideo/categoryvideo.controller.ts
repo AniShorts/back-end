@@ -15,11 +15,11 @@ import { UpdateCategoryvideoDto } from './dto/update-categoryvideo.dto';
 export class CategoryvideoController {
   constructor(private readonly categoryvideoService: CategoryvideoService) {}
 
-  /*   @Post()
+  @Post()
   async inputVideo(@Body() body) {
     return await this.categoryvideoService.create(body);
   }
-
+  /*  
   @Delete(':videoId')
   async delVideo(@Param() videoId: number) {
     return await this.categoryvideoService.removeByVideoId(videoId);

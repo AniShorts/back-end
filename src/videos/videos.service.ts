@@ -16,22 +16,32 @@ import { Users } from 'src/users/entities/user.entity';
 import { error } from 'console';
 import { CategorylistService } from 'src/categorylist/categorylist.service';
 import { create } from 'domain';
-
+import { CategoryvideoService } from 'src/categoryvideo/categoryvideo.service';
 @Injectable()
 export class VideosService {
   constructor(
     @InjectRepository(Video) private videosRepository: Repository<Video>,
     private categoryListService: CategorylistService,
+    private categoryvideoService: CategoryvideoService,
   ) {}
   //동영상 업로드
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
-    console.log('createVideo', createVideoDto);
-    await this.categoryListService.checkCategory(createVideoDto.categories);
-
+    let categoryIds = await this.categoryListService.checkCategory(
+      createVideoDto.categories,
+    );
+    console.log('categoryIds:', categoryIds);
     const video = this.videosRepository.create({
       ...createVideoDto,
     });
     await this.videosRepository.save(video);
+    console.log('video:', video);
+    //여기서 categoryvideo 생성
+    for (const categoryId of categoryIds) {
+      await this.categoryvideoService.create({
+        videoId: video.videoId,
+        categoryId: categoryId,
+      });
+    }
 
     return video;
   }

@@ -25,12 +25,6 @@ export class CategorylistController {
   4. 카테고리 수정
    */
 
-  /*   public async checkCategory(categories: any[]): Promise<void> {
-    for (const category of categories) {
-      await this.inputCategory(category);
-    }
-  } */
-
   @Get('')
   async categoryList() {
     return await this.categorylistService.findAll();

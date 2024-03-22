@@ -15,11 +15,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Video } from 'src/videos/entities/video.entity';
 import { Categorylist } from 'src/categorylist/entities/categorylist.entity';
 
-@Entity({
-  orderBy: {
-    id: 'DESC',
-  },
-})
+@Entity()
 export class Categoryvideo {
   @PrimaryColumn()
   categoryId: number;
