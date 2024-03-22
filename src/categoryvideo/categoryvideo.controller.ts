@@ -30,10 +30,10 @@ export class CategoryvideoController {
     return await this.categoryvideoService.detailDelVideo(body);
   } */
 
-  /*   @Get('/videoId/:videoId')
+  @Get('/videoId/:videoId')
   async findVideo(@Param('videoId') videoId: number) {
     return await this.categoryvideoService.findByVideoId(videoId);
-  } */
+  }
   /*   @Get('/category/:categoryId')
   async findCategory(@Param('categoryId') categoryId: number) {
     return await this.categoryvideoService.findCategory(categoryId);

@@ -3,7 +3,7 @@ import { CreateCategoryvideoDto } from './dto/create-categoryvideo.dto';
 import { UpdateCategoryvideoDto } from './dto/update-categoryvideo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categoryvideo } from './entities/categoryvideo.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import internal from 'stream';
 
 @Injectable()
@@ -20,13 +20,14 @@ export class CategoryvideoService {
       categoryId: body.categoryId,
     });
   }
-  /* 
-  async removeByVideoId(videoId: number) {
+
+  public async removeByVideoId(videoId: number, categoriesToRemove: number[]) {
     return await this.categoryvideoRepository.delete({
-      video: { videoId: videoId },
+      videoId: videoId,
+      categoryId: In(categoriesToRemove), // Assuming you can use the `In` operator from TypeORM
     });
     // return `This action removes a #${id} category`;
-  } */
+  }
   /* 
   async detailDelVideo(createCategoryvideoDto: CreateCategoryvideoDto) {
     return await this.categoryvideoRepository.delete({

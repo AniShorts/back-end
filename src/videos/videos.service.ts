@@ -47,22 +47,15 @@ export class VideosService {
   }
   //전체 동영상
   async findAllVideos() {
-    //return await this.videosRepository.find();
-    /*     const videos = await this.videosRepository
-      .createQueryBuilder('video') // Alias 'video' for the Video entity
-      .leftJoinAndSelect('video.categories', 'category') // Assumes you have a 'categories' property in Video entity
-      .getMany(); // Retrieves all Video entities with their CategoryList entities loaded
-
-    return videos; */
     return await this.videosRepository.find({
-      relations: ['categories'], // Load 'categories' relation
+      relations: ['categories'],
     });
   }
   //동영상 하나
   async findOneVideo(id: number): Promise<Video> {
     const video = await this.videosRepository.findOne({
       where: { videoId: id },
-      relations: ['categories'], // Specify to load 'categories' relation
+      relations: ['categories'],
     });
 
     if (!video) {
@@ -86,10 +79,36 @@ export class VideosService {
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
     console.log(updateVideoDto);
-    const updatedVideo = await this.videosRepository.update(
-      { videoId: id },
-      { ...updateVideoDto },
+    let newCategoryIds = await this.categoryListService.checkCategory(
+      updateVideoDto.categories,
     );
+    console.log('newCategoryIds: ', newCategoryIds);
+    const currentCategories = await this.categoryvideoService.findByVideoId(id);
+    const currentCategoryIds = currentCategories.map((c) => c.categoryId);
+    console.log('currentCategoryIds: ', currentCategoryIds);
+
+    const categoriesToAdd = newCategoryIds.filter(
+      (id) => !currentCategoryIds.includes(id),
+    );
+    console.log('add: ', categoriesToAdd);
+    const categoriesToRemove = currentCategoryIds.filter(
+      (id) => !newCategoryIds.includes(id),
+    );
+
+    console.log('remove: ', categoriesToRemove);
+
+    await this.categoryvideoService.removeByVideoId(id, categoriesToRemove);
+    for (const categoryId of categoriesToAdd) {
+      await this.categoryvideoService.create({
+        videoId: id,
+        categoryId,
+      });
+    }
+
+    const updatedVideo = await this.videosRepository.update(id, {
+      ...updateVideoDto,
+      categories: undefined,
+    });
     return updatedVideo;
   }
   //동영상 삭제
