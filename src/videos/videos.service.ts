@@ -47,14 +47,22 @@ export class VideosService {
   }
   //전체 동영상
   async findAllVideos() {
-    return await this.videosRepository.find();
+    //return await this.videosRepository.find();
+    /*     const videos = await this.videosRepository
+      .createQueryBuilder('video') // Alias 'video' for the Video entity
+      .leftJoinAndSelect('video.categories', 'category') // Assumes you have a 'categories' property in Video entity
+      .getMany(); // Retrieves all Video entities with their CategoryList entities loaded
+
+    return videos; */
+    return await this.videosRepository.find({
+      relations: ['categories'], // Load 'categories' relation
+    });
   }
   //동영상 하나
   async findOneVideo(id: number): Promise<Video> {
     const video = await this.videosRepository.findOne({
-      where: {
-        videoId: id,
-      },
+      where: { videoId: id },
+      relations: ['categories'], // Specify to load 'categories' relation
     });
 
     if (!video) {

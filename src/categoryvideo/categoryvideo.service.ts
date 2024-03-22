@@ -34,14 +34,14 @@ export class CategoryvideoService {
     });
   } */
 
-  /*   async findByVideoId(videoId: number): Promise<Categoryvideo[]> {
+  public async findByVideoId(videoId: number): Promise<Categoryvideo[]> {
     let list = await this.categoryvideoRepository.find({
       where: {
         video: { videoId: videoId },
       },
     });
     return list;
-  } */
+  }
 
   /*   async findCategory(categoryId: number): Promise<Categoryvideo[]> {
     let list = await this.categoryvideoRepository.find({
