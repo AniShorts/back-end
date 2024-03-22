@@ -83,34 +83,18 @@ export class VideosService {
       updateVideoDto.categories,
     );
     console.log('newCategoryIds: ', newCategoryIds);
-    const currentCategories = await this.categoryvideoService.findByVideoId(id);
-    const currentCategoryIds = currentCategories.map((c) => c.categoryId);
-    console.log('currentCategoryIds: ', currentCategoryIds);
 
-    const categoriesToAdd = newCategoryIds.filter(
-      (id) => !currentCategoryIds.includes(id),
-    );
-    console.log('add: ', categoriesToAdd);
-    const categoriesToRemove = currentCategoryIds.filter(
-      (id) => !newCategoryIds.includes(id),
-    );
+    // Update categories using the new dedicated function
+    await this.updateVideoCategories(id, newCategoryIds);
 
-    console.log('remove: ', categoriesToRemove);
+    // Update the video entity itself (excluding categories from DTO)
+    const { categories, ...videoUpdateData } = updateVideoDto;
+    await this.videosRepository.update(id, videoUpdateData);
 
-    await this.categoryvideoService.removeByVideoId(id, categoriesToRemove);
-    for (const categoryId of categoriesToAdd) {
-      await this.categoryvideoService.create({
-        videoId: id,
-        categoryId,
-      });
-    }
-
-    const updatedVideo = await this.videosRepository.update(id, {
-      ...updateVideoDto,
-      categories: undefined,
-    });
-    return updatedVideo;
+    // Optionally, fetch and return the updated video with its categories
+    return this.findOneVideo(id);
   }
+
   //동영상 삭제
   async deleteVideo(userId: number, videoId: number) {
     const result = await this.videosRepository.delete(videoId);
@@ -132,4 +116,31 @@ export class VideosService {
     });
     return searchedVideosByCategory;
   } */
+
+  async updateVideoCategories(videoId: number, newCategoryIds: number[]) {
+    // Fetch current categories associated with the video
+    const currentCategories = await this.categoryvideoService.findByVideoId(
+      videoId,
+    );
+    const currentCategoryIds = currentCategories.map((c) => c.categoryId);
+
+    // Determine categories to add and remove
+    const categoriesToAdd = newCategoryIds.filter(
+      (id) => !currentCategoryIds.includes(id),
+    );
+    const categoriesToRemove = currentCategoryIds.filter(
+      (id) => !newCategoryIds.includes(id),
+    );
+
+    // Remove categories that are no longer associated
+    await this.categoryvideoService.removeByVideoId(
+      videoId,
+      categoriesToRemove,
+    );
+
+    // Add new category associations
+    for (const categoryId of categoriesToAdd) {
+      await this.categoryvideoService.create({ videoId, categoryId });
+    }
+  }
 }
