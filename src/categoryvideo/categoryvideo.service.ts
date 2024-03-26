@@ -44,12 +44,14 @@ export class CategoryvideoService {
     return list;
   }
 
-  /*   async findCategory(categoryId: number): Promise<Categoryvideo[]> {
+  public async findByCategoryId(categoryId: number): Promise<Categoryvideo[]> {
+    console.log(categoryId);
     let list = await this.categoryvideoRepository.find({
+      select: ['videoId'],
       where: {
         categoryId: categoryId,
       },
     });
     return list;
-  } */
+  }
 }

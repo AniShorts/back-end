@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateCategorylistDto } from './dto/create-categorylist.dto';
 import { UpdateCategorylistDto } from './dto/update-categorylist.dto';
 import { Categorylist } from './entities/categorylist.entity';
+import { SearchVideoDto } from 'src/videos/dto/search-video.dto';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class CategorylistService {
@@ -19,6 +21,15 @@ export class CategorylistService {
     for (const category of categories) {
       categoryIds.push(await this.create(category));
     }
+    return categoryIds;
+  }
+
+  public async searchCetegory(keyword: SearchVideoDto) {
+    let categoryIds = await this.categorylistRepository.find({
+      select: ['categoryId'],
+      where: { categoryName: Like(`%${keyword.keyword}%`) },
+    });
+
     return categoryIds;
   }
 
