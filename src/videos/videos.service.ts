@@ -57,6 +57,11 @@ export class VideosService {
       where: { videoId: id },
       relations: ['categories'],
     });
+    // Increment the view count by 1
+    video.views += 1;
+
+    // Save the updated video entity to update the view count in the database
+    await this.videosRepository.save(video);
 
     if (!video) {
       throw new NotFoundException(`Can't find Video with id: ${id}`);
