@@ -115,12 +115,33 @@ export class VideosService {
   }
 
   //검색 - category으로 검색
-  /*   async searchByCate(keyword: SearchVideoDto) {
-    const searchedVideosByCategory = await this.videosRepository.find({
-      where: { categories: Like(`%${keyword.keyword}%`) },
-    });
-    return searchedVideosByCategory;
-  } */
+  async searchByCate(keyword: SearchVideoDto) {
+    const searchedCategoryIds = await this.categoryListService.searchCetegory(
+      keyword,
+    );
+
+    // Use Promise.all to fetch videos by category IDs concurrently
+    const videoIdPromises = searchedCategoryIds.map((cId) =>
+      this.categoryvideoService.findByCategoryId(cId.categoryId),
+    );
+    const videoIdResults = await Promise.all(videoIdPromises);
+
+    // Flatten the array of video ID arrays to a single array of video IDs
+    const videoIds = videoIdResults.flat();
+
+    // Use Promise.all to fetch video details concurrently
+    const videoPromises = videoIds.map((vId) => this.findOneVideo(vId.videoId));
+    let videos = await Promise.all(videoPromises);
+
+    // Remove duplicate videos based on videoId
+    const uniqueVideosMap = new Map();
+    videos.forEach((video) => uniqueVideosMap.set(video.videoId, video));
+
+    // Convert the Map back to an array of unique videos
+    videos = Array.from(uniqueVideosMap.values());
+
+    return videos;
+  }
 
   async updateVideoCategories(videoId: number, newCategoryIds: number[]) {
     // Fetch current categories associated with the video
