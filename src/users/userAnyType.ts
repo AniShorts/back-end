@@ -6,13 +6,13 @@ class category{
 }
 class SignupInputType{
     @ApiProperty({
-        example: 'Test',
+        example: 'Test10',
         description: '유저 아이디',
         required: true,
     })
     nickname:string;
     @ApiProperty({
-        example: '1234',
+        example: '!12345qwer',
         description: '유저 비밀번호',
         required: true,
     })
@@ -39,7 +39,7 @@ class SignupInputType{
 
 class NicknameInputType{
     @ApiProperty({
-        example: 'Test',
+        example: 'Test10',
         description: '유저 아이디',
         required: true,
     })
