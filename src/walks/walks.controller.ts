@@ -27,8 +27,12 @@ export class WalksController {
   @Get('/list/:pageNum')
   async walkBoardList(@Param('pageNum') pageNum:number,@Res() response:Response) {
     const boardInfo=await this.walksService.boardfindAll(pageNum);
-
-    return response.status(200).send(new WalkBoardList(true,boardInfo.list[0],pageNum,boardInfo.pageList))
+    //return: {list, pageNum, pageList}
+    return response.status(200).send({
+      walks:boardInfo.list[0],
+      pageNum:pageNum,
+      totalPage:boardInfo.totalPage
+    })
   }
 
   //기존의 api설계에서는 comment까지 같이 제공하는 것으로 되어있다.

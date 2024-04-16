@@ -83,17 +83,17 @@ export class WalksService {
       pageNum=pageLimit
     }
     
-    let pageList:number[]=[];
-    let providePageNum=function(first:number){
+    var totalPage:Number[]=[];
+    var providePageNum=function(first:number){
       for(let i=first;i<first+pageSize;i++){
-        pageList.push(i)
+        totalPage.push(i)
       }
     }
     if(boardCount===0){
       providePageNum(1);
       return  {
         list:null,
-        pageList:pageList
+        totalPage:totalPage
       }
     }if(pageNum<=pageSize/2){
       providePageNum(1);
@@ -127,7 +127,7 @@ export class WalksService {
     
     return {
       list,
-      pageList
+      totalPage
     }
   }
 
