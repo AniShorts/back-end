@@ -6,10 +6,12 @@ import { Walk } from './entities/walk.entity';
 import { UsersModule } from 'src/users/users.module';
 import { ChattingsModule } from 'src/chattings/chattings.module';
 import { ConfigModule } from '@nestjs/config';
+import { WalkcommentsModule } from 'src/walkcomments/walkcomments.module';
 
 @Module({
   imports: [
     UsersModule,
+    WalkcommentsModule,
     ChattingsModule,
     TypeOrmModule.forFeature([Walk]),
     ConfigModule,

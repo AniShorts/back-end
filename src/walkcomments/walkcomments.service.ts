@@ -86,6 +86,18 @@ export class WalkcommentsService {
     }
     return list;
   }
+  
+  //walkID를 기준으로 댓글수
+  async countWalkCommentByWalkId(walkId:number):Promise<number>{
+    const count:number=await this.walkcommentRepository.findAndCount({
+      where:{
+        walk:{
+          walkId:walkId
+        }
+      }
+    })[1]
+    return count;
+  }
 
   async updateByWalkCommentId(walkCommentId: number, updateWalkcommentDto: UpdateWalkcommentDto):Promise<Boolean> {
     try {

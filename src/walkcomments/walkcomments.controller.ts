@@ -16,11 +16,17 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { Users } from 'src/users/entities/user.entity';
 import { Walk } from 'src/walks/entities/walk.entity';
+import { WlakCommentInsert } from './walkcommentsAnyType';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('walkcomments')
 export class WalkcommentsController {
   constructor(private readonly walkcommentsService: WalkcommentsService) {}
 
+  @ApiBearerAuth('access-token')
+  @ApiBody({type:WlakCommentInsert})
+  @ApiOperation({ summary: '산책 댓글 작성 API', description: '산책 댓글을 작성한다.' })
+  @ApiResponse({status:200, description: '산책 댓글을 작성한다',type:CreateWalkcommentDto})
   @UseGuards(JwtAuthGuard)
   @Post('/:walkId')
   async create(
