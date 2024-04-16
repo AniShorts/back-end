@@ -1,4 +1,3 @@
 export class CreateCategorylistDto {
-    id:number;
-    category:string;
+  categoryName: string;
 }

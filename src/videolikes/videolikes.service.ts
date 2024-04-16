@@ -1,11 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVideolikeDto } from './dto/create-videolike.dto';
 import { UpdateVideolikeDto } from './dto/update-videolike.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Videolike } from './entities/videolike.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class VideolikesService {
-  create(createVideolikeDto: CreateVideolikeDto) {
-    return 'This action adds a new videolike';
+  constructor(
+    @InjectRepository(Videolike)
+    private videolikeRepository: Repository<Videolike>,
+  ) {}
+
+  async create(createVideolikeDto: CreateVideolikeDto) {
+    try {
+      const like = this.videolikeRepository.create({
+        ...createVideolikeDto,
+      });
+      return await this.videolikeRepository.save(like);
+    } catch (error) {
+      console.error('Error creating Videolike:', error);
+      throw error;
+    }
   }
 
   findAll() {

@@ -16,9 +16,9 @@ import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
-import { Video } from './entities/video.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common/decorators';
+import { Users } from 'src/users/entities/user.entity';
 
 @Controller('videos')
 export class VideosController {
@@ -28,8 +28,8 @@ export class VideosController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createVideo(@Req() request, @Body() createVideoDto: CreateVideoDto) {
-    const { userId } = request.user;
-    createVideoDto.userId = userId;
+    createVideoDto.user = new Users(request.user.userId);
+
     return await this.videosService.createVideo(createVideoDto);
   }
 
@@ -40,7 +40,7 @@ export class VideosController {
     return await this.videosService.findAllVideos();
   }
 
-  //검색-동영상 하나를 불러오는 GET 요청이 @param을 받기 때문에 순서때문에 애러 발생
+  //검색
   @Get('searchByname')
   async searchByName(@Query() searchVideoDto: SearchVideoDto) {
     return await this.videosService.searchByName(searchVideoDto);
@@ -64,6 +64,7 @@ export class VideosController {
   }
 
   //동영상 업데이트
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateVideo(
     @Param('id') id: number,
@@ -78,7 +79,7 @@ export class VideosController {
     const { userId } = request.user;
     console.log(userId);
     const video = await this.videosService.findOneVideo(videoId);
-    if (userId !== video.userId) {
+    if (userId !== video.user) {
       throw new HttpException(
         'Not same user created video',
         HttpStatus.FORBIDDEN,
