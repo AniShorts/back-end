@@ -10,6 +10,8 @@ import { ChattingsService } from 'src/chattings/chattings.service';
 import { Chatting } from 'src/chattings/entities/chatting.entity';
 import { CreateChattingDto } from 'src/chattings/dto/create-chatting.dto';
 import { ConfigService } from '@nestjs/config';
+import { Walkcomment } from 'src/walkcomments/entities/walkcomment.entity';
+import { WalkcommentsService } from 'src/walkcomments/walkcomments.service';
 
 @Injectable()
 export class WalksService {
@@ -17,6 +19,7 @@ export class WalksService {
     @InjectRepository(Walk) private walkRepository: Repository<Walk>,
     private readonly usersService:UsersService,
     private readonly chatttingService:ChattingsService,
+    private readonly walkcommentService:WalkcommentsService,
     private dataSource:DataSource,
     private configService:ConfigService,
     ) {
@@ -102,7 +105,6 @@ export class WalksService {
     }else{
       providePageNum(pageNum-pageSize/2);
     }
-
     const list:[Walk[],number]=await this.walkRepository.findAndCount({
       order:{
         walkId:'DESC'
@@ -112,8 +114,11 @@ export class WalksService {
       },
       select:{
         walkId:true,
+        walkTitle:true,
+        seeNum:true,
         user:{
-          userId:true
+          userId:true,
+          nickname:true
         },
         createAt:true
       },
@@ -122,11 +127,19 @@ export class WalksService {
     });
     for(let ele of list[0]){
       ele["userId"]=ele.user.userId;
+      ele["nickname"]=ele.user.nickname;
       delete ele.user
     }
     
+    let result=[];
+    for(let i=0;i<list[0].length;i++){
+      result.push({
+        ...list[0][i],
+        commentNum:await this.walkcommentService.countWalkCommentByWalkId(list[0]["walkId"])
+      });
+    }
     return {
-      list,
+      result,
       totalPage
     }
   }
@@ -159,6 +172,19 @@ export class WalksService {
     }else{
       return walkInfo
     }
+  }
+
+  /**
+   * 조회수 증가 업데이트
+   * @param walkId 
+   */
+  async SeeNumUpdate(walkId: number){
+    const walkInfo=await this.walkRepository.findOne({
+      where:{
+        walkId:walkId
+      }
+    })
+    await this.walkRepository.update({walkId},{seeNum:walkInfo.seeNum+1})
   }
 
   /**

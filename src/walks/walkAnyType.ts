@@ -56,7 +56,7 @@ class WalkOutputType extends outputBase{
         }
 
     @ApiProperty({
-        example: `{walkId:1,walkTitle:글제목,location:약속위치,createAt:2023/08/04,userId:1,chatId:1,maxNum:3,curNum:1}`,
+        example: `{walkId:1,walkTitle:글제목,location:약속위치,createAt:2023/08/04,userId:1,nickname:"Test",chatId:1,maxNum:3,curNum:1}`,
         description: '',
         required: true,
     })

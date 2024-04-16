@@ -82,4 +82,14 @@ export class Walk {
         comment: 'Current number of users in the chat room',
       })
     curNum:number;
+
+    
+    @ApiProperty()
+    @Column({
+        type: 'int',
+        comment: 'Number of people who saw the post',
+      })
+    seeNum:number;
+
+    commentNum:number;
 }
