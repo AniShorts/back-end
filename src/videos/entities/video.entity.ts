@@ -5,15 +5,18 @@ import {
   Timestamp,
   CreateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
   Entity,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 import { Users } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Categoryvideo } from 'src/categoryvideo/entities/categoryvideo.entity';
-import { Category } from 'src/category/entities/category.entity';
 import { Videolike } from 'src/videolikes/entities/videolike.entity';
+import { Categorylist } from 'src/categorylist/entities/categorylist.entity';
 
 @Entity({
   orderBy: {
@@ -23,17 +26,12 @@ import { Videolike } from 'src/videolikes/entities/videolike.entity';
 export class Video extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  @ManyToOne(() => Users, (users) => users.userId)
-  @OneToMany(() => Videolike, (videolikes) => videolikes.videolikeId)
-  @OneToMany(() => Categoryvideo, (categoryvideo) => categoryvideo.categoryId)
   videoId: number;
 
   @ApiProperty()
-  @Column({
-    type: 'int',
-    comment: 'user`s unique number',
-  })
-  userId: number;
+  @ManyToOne(() => Users)
+  @JoinColumn({ name: 'userId' })
+  user: Users;
 
   @ApiProperty()
   @Column({
@@ -57,6 +55,13 @@ export class Video extends BaseEntity {
   videoImg: string;
 
   @ApiProperty()
+  @Column({
+    type: 'varchar',
+    comment: 'The destination of a video',
+  })
+  videoDest: string;
+
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Timestamp;
 
@@ -74,8 +79,14 @@ export class Video extends BaseEntity {
   })
   commentNum: number;
 
-  @ApiProperty()
-  @Column('json')
-  category: { id: number; name: string };
-  categoryVideos: Categoryvideo[];
+  @ManyToMany(() => Categorylist)
+  @JoinTable({
+    name: 'categoryvideo', // Join table name
+    joinColumn: { name: 'videoId', referencedColumnName: 'videoId' }, // Correct, assuming videoId is Video's PK
+    inverseJoinColumn: {
+      name: 'categoryId',
+      referencedColumnName: 'categoryId',
+    }, // Correct, assuming categoryId is Categorylist's PK
+  })
+  categories?: Categorylist[];
 }

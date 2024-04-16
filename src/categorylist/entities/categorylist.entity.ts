@@ -1,30 +1,32 @@
-import { 
-    Column, 
-    Entity, 
-    PrimaryColumn, 
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    OneToMany,
-  } from 'typeorm/index';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm/index';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { Video } from 'src/videos/entities/video.entity';
 
 @Entity({
-    orderBy:{
-        id: 'DESC'
-      }
-  })
-
+  orderBy: {
+    categoryId: 'DESC',
+  },
+})
 export class Categorylist {
-    @ApiProperty()
-    @PrimaryGeneratedColumn('increment')
-    id:number;
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
+  categoryId: number;
 
-    @ApiProperty()
-    @PrimaryColumn({
-        type: 'varchar',
-        comment: 'category name',
-    })
-    category:string;
-  }
+  @ApiProperty()
+  @Column()
+  categoryName: string;
+
+  @ManyToMany(() => Video, (video) => video.categories)
+  videos?: Video[];
+}

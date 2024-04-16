@@ -10,33 +10,58 @@ import { UpdateVideoDto } from './dto/update-video.dto';
 import { SearchVideoDto } from './dto/search-video.dto';
 import { Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
+import { CategorylistController } from 'src/categorylist/categorylist.controller';
 import { Like } from 'typeorm';
 import { Users } from 'src/users/entities/user.entity';
 import { error } from 'console';
-
+import { CategorylistService } from 'src/categorylist/categorylist.service';
+import { create } from 'domain';
+import { CategoryvideoService } from 'src/categoryvideo/categoryvideo.service';
 @Injectable()
 export class VideosService {
   constructor(
     @InjectRepository(Video) private videosRepository: Repository<Video>,
+    private categoryListService: CategorylistService,
+    private categoryvideoService: CategoryvideoService,
   ) {}
   //동영상 업로드
   async createVideo(createVideoDto: CreateVideoDto): Promise<Video> {
-    const newVideo = this.videosRepository.create({
+    let categoryIds = await this.categoryListService.checkCategory(
+      createVideoDto.categories,
+    );
+    console.log('categoryIds:', categoryIds);
+    const video = this.videosRepository.create({
       ...createVideoDto,
     });
-    return await this.videosRepository.save(newVideo);
+    await this.videosRepository.save(video);
+    console.log('video:', video);
+    //여기서 categoryvideo 생성
+    for (const categoryId of categoryIds) {
+      await this.categoryvideoService.create({
+        videoId: video.videoId,
+        categoryId: categoryId,
+      });
+    }
+
+    return video;
   }
   //전체 동영상
   async findAllVideos() {
-    return await this.videosRepository.find();
+    return await this.videosRepository.find({
+      relations: ['categories'],
+    });
   }
   //동영상 하나
   async findOneVideo(id: number): Promise<Video> {
     const video = await this.videosRepository.findOne({
-      where: {
-        videoId: id,
-      },
+      where: { videoId: id },
+      relations: ['categories'],
     });
+    // Increment the view count by 1
+    video.views += 1;
+
+    // Save the updated video entity to update the view count in the database
+    await this.videosRepository.save(video);
 
     if (!video) {
       throw new NotFoundException(`Can't find Video with id: ${id}`);
@@ -46,9 +71,8 @@ export class VideosService {
   //유저별
   async findUsersVideos(id: number) {
     const video = await this.videosRepository.find({
-      where: {
-        userId: id,
-      },
+      where: { user: { userId: id } },
+      relations: ['user'],
     });
 
     if (!video) {
@@ -59,12 +83,23 @@ export class VideosService {
 
   //동영상 업데이트
   async updateVideo(id: number, updateVideoDto: UpdateVideoDto) {
-    const updatedVideo = await this.videosRepository.update(
-      { videoId: id },
-      { ...updateVideoDto },
+    console.log(updateVideoDto);
+    let newCategoryIds = await this.categoryListService.checkCategory(
+      updateVideoDto.categories,
     );
-    return updatedVideo;
+    console.log('newCategoryIds: ', newCategoryIds);
+
+    // Update categories using the new dedicated function
+    await this.updateVideoCategories(id, newCategoryIds);
+
+    // Update the video entity itself (excluding categories from DTO)
+    const { categories, ...videoUpdateData } = updateVideoDto;
+    await this.videosRepository.update(id, videoUpdateData);
+
+    // Optionally, fetch and return the updated video with its categories
+    return this.findOneVideo(id);
   }
+
   //동영상 삭제
   async deleteVideo(userId: number, videoId: number) {
     const result = await this.videosRepository.delete(videoId);
@@ -81,10 +116,57 @@ export class VideosService {
 
   //검색 - category으로 검색
   async searchByCate(keyword: SearchVideoDto) {
-    console.log(1);
-    const searchedVideosByCategory = await this.videosRepository.find({
-      where: { category: Like(`%${keyword.keyword}%`) },
-    });
-    return searchedVideosByCategory;
+    const searchedCategoryIds = await this.categoryListService.searchCetegory(
+      keyword,
+    );
+
+    // Use Promise.all to fetch videos by category IDs concurrently
+    const videoIdPromises = searchedCategoryIds.map((cId) =>
+      this.categoryvideoService.findByCategoryId(cId.categoryId),
+    );
+    const videoIdResults = await Promise.all(videoIdPromises);
+
+    // Flatten the array of video ID arrays to a single array of video IDs
+    const videoIds = videoIdResults.flat();
+
+    // Use Promise.all to fetch video details concurrently
+    const videoPromises = videoIds.map((vId) => this.findOneVideo(vId.videoId));
+    let videos = await Promise.all(videoPromises);
+
+    // Remove duplicate videos based on videoId
+    const uniqueVideosMap = new Map();
+    videos.forEach((video) => uniqueVideosMap.set(video.videoId, video));
+
+    // Convert the Map back to an array of unique videos
+    videos = Array.from(uniqueVideosMap.values());
+
+    return videos;
+  }
+
+  async updateVideoCategories(videoId: number, newCategoryIds: number[]) {
+    // Fetch current categories associated with the video
+    const currentCategories = await this.categoryvideoService.findByVideoId(
+      videoId,
+    );
+    const currentCategoryIds = currentCategories.map((c) => c.categoryId);
+
+    // Determine categories to add and remove
+    const categoriesToAdd = newCategoryIds.filter(
+      (id) => !currentCategoryIds.includes(id),
+    );
+    const categoriesToRemove = currentCategoryIds.filter(
+      (id) => !newCategoryIds.includes(id),
+    );
+
+    // Remove categories that are no longer associated
+    await this.categoryvideoService.removeByVideoId(
+      videoId,
+      categoriesToRemove,
+    );
+
+    // Add new category associations
+    for (const categoryId of categoriesToAdd) {
+      await this.categoryvideoService.create({ videoId, categoryId });
+    }
   }
 }

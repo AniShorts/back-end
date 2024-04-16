@@ -19,10 +19,14 @@ export class VideolikesController {
   constructor(private readonly videolikesService: VideolikesService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post()
-  create(@Body() createVideolikeDto: CreateVideolikeDto, @Req() req) {
-    const { userId } = req.user;
-    console.log(userId);
+  @Post('/:id')
+  create(
+    @Param('id') id: number,
+    @Body() createVideolikeDto: CreateVideolikeDto,
+    @Req() req,
+  ) {
+    createVideolikeDto.userId = req.user.userId;
+    createVideolikeDto.videoId = Number(id);
     return this.videolikesService.create(createVideolikeDto);
   }
 
