@@ -25,7 +25,7 @@ export class WalksController {
     return response.status(200).send({
       walks:boardInfo.list[0],
       pageNum:pageNum,
-      pageList:boardInfo.pageList
+      totalPage:boardInfo.totalPage
     })
   }
 
