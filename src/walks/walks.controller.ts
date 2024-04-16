@@ -29,7 +29,7 @@ export class WalksController {
     const boardInfo=await this.walksService.boardfindAll(pageNum);
     //return: {list, pageNum, pageList}
     return response.status(200).send({
-      walks:boardInfo.list[0],
+      walks:boardInfo.result,
       pageNum:pageNum,
       totalPage:boardInfo.totalPage
     })
@@ -51,6 +51,8 @@ export class WalksController {
     @Res() res:Response,
   ) {
     const result:Walk= await this.walksService.findOneByWalkId(walkId);
+    //조회수 증가
+    await this.walksService.SeeNumUpdate(walkId);
     return res.send(new WalkOutputType(true,result))
   }
 
